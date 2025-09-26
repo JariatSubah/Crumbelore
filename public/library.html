@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - Crumbelore</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: #FEFDF8;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background:rgba(254, 253, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #654321;
+        }
+
+        .nav-links a.active {
+            color: #654321;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .library-hero {
+            height: 60vh;
+            background: linear-gradient(rgba(101, 67, 33, 0.4), rgba(139, 69, 19, 0.3)), 
+                        url('Images/library.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .library-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(254, 253, 248, 0.1) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .library-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 600;
+            color: #271601e7;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .library-subtitle {
+            font-size: 1.5rem;
+            color: #c4b8af;
+            font-weight: 300;
+            font-style: italic;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .stat-box {
+            background: rgba(203, 174, 174, 0.363);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4f2f10;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64320e;
+            margin-top: 0.3rem;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: #FFFFFF;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(101, 67, 33, 0.1);
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #E8D5C4;
+            border-radius: 25px;
+            font-size: 1rem;
+            color: #654321;
+            background: #FEFDF8;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 15px rgba(139, 69, 19, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8B4513;
+            font-size: 1.2rem;
+        }
+
+        .genre-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .genre-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #E8D5C4;
+            background: transparent;
+            color: #8B4513;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .genre-btn:hover,
+        .genre-btn.active {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: #FEFDF8;
+            border-color: #654321;
+            transform: translateY(-2px);
+        }
+
+        /* Library Section */
+        .library-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Featured Books */
+        .featured-section {
+            margin-bottom: 5rem;
+        }
+
+        .featured-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #654321;
+        }
+
+        .view-all-btn {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            color: #654321;
+        }
+
+        .featured-books {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Book Cards */
+        .book-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(101, 67, 33, 0.1);
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(101, 67, 33, 0.15);
+        }
+
+        .book-cover {
+            width: 120px;
+            height: 180px;
+            background: linear-gradient(135deg, #8B4513, #654321);
+            border-radius: 12px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FEFDF8;
+            font-size: 3rem;
+            box-shadow: 0 8px 20px rgba(101, 67, 33, 0.2);
+            position: relative;
+        }
+
+        .book-cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(254, 253, 248, 0.1) 0%, transparent 50%);
+            border-radius: 12px;
+        }
+
+        .book-info {
+            text-align: center;
+        }
+
+        .book-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: #654321;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .book-author {
+            color: #8B4513;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .book-genre {
+            background: rgba(101, 67, 33, 0.1);
+            color: #654321;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .book-description {
+            color: #8B4513;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+           /* Modern browsers */
+
+           display: -webkit-box;
+
+           -webkit-line-clamp: 3;
+
+           -webkit-box-orient: vertical;
+
+           line-clamp: 3;  /* Standard property added */
+
+           overflow: hidden;
+
+  
+           /* Fallback for older browsers */
+
+           max-height: 4.8rem;
+
+           text-overflow: ellipsis;
+        }
+
+        .book-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .availability {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .available {
+            color: #4CAF50;
+        }
+
+        .unavailable {
+            color: #f44336;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #FFC107;
+        }
+
+        .book-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .reserve-btn,
+        .read-more-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .reserve-btn {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: white;
+        }
+
+        .reserve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(101, 67, 33, 0.3);
+        }
+
+        .reserve-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .read-more-btn {
+            background: transparent;
+            color: #8B4513;
+            border: 2px solid #E8D5C4;
+        }
+
+        .read-more-btn:hover {
+            background: #E8D5C4;
+            color: #654321;
+        }
+
+        .bestseller-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, #E8D5C4, #F5E6D3);
+            color: #654321;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(101, 67, 33, 0.2);
+        }
+
+        /* Categories Section */
+        .categories-section {
+            margin-bottom: 5rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(101, 67, 33, 0.15);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(101,67,33,0.05) 0%, transparent 60%);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #654321;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .category-count {
+            color: #8B4513;
+            font-size: 0.9rem;
+        }
+
+        /* Reading Corner */
+        .reading-corner {
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            border-radius: 25px;
+            padding: 3rem;
+            color: #FEFDF8;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reading-corner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="corner-pattern" patternUnits="userSpaceOnUse" width="40" height="40"><circle cx="8" cy="8" r="1" fill="rgba(254,253,248,0.03)"/><rect x="20" y="15" width="4" height="6" rx="0.5" fill="rgba(254,253,248,0.02)"/><circle cx="30" cy="30" r="0.8" fill="rgba(254,253,248,0.04)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23corner-pattern)"/></svg>') repeat;
+            opacity: 0.5;
+        }
+
+        .reading-corner-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .corner-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #F5E6D3;
+        }
+
+        .corner-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: #E8D5C4;
+        }
+
+        .corner-cta {
+            background: rgba(245, 230, 211, 0.2);
+            border: 2px solid #E8D5C4;
+            color: #F5E6D3;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .corner-cta:hover {
+            background: #F5E6D3;
+            color: #654321;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .library-title {
+                font-size: 3rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .genre-filters {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .featured-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .book-actions {
+                flex-direction: column;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .reading-corner {
+                padding: 2rem;
+            }
+
+            .corner-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Book Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #FFFFFF;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 25px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(101, 67, 33, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #8B4513;
+            cursor: pointer;
+        }
+
+        .modal-book-info {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-book-cover {
+            width: 150px;
+            height: 225px;
+            background: linear-gradient(135deg, #8B4513, #654321);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FEFDF8;
+            font-size: 4rem;
+            flex-shrink: 0;
+        }
+
+        .modal-book-details h2 {
+            font-family: 'Playfair Display', serif;
+            color: #654321;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-book-details p {
+            color: #8B4513;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(101, 67, 33, 0.3);
+            border-radius: 50%;
+            border-top-color: #654321;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">Crumbelore</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="event.html">Events</a></li>
+                <li><a href="library.html" class="active">Library</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="checkout.html">Checkout</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="library-hero">
+        <div class="hero-content">
+            <h1 class="library-title">Our Library</h1>
+            <p class="library-subtitle">A Literary Sanctuary of Stories & Knowledge</p>
+            <div class="hero-stats">
+                <div class="stat-box">
+                    <span class="stat-number">2,847</span>
+                    <div class="stat-label">Books Available</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">47</span>
+                    <div class="stat-label">Genres</div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">156</span>
+                    <div class="stat-label">New This Month</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search books, authors, or genres..." id="searchInput">
+            </div>
+            <div class="genre-filters">
+                <button class="genre-btn active" onclick="filterByGenre('all')">All</button>
+                <button class="genre-btn" onclick="filterByGenre('fiction')">Fiction</button>
+                <button class="genre-btn" onclick="filterByGenre('mystery')">Mystery</button>
+                <button class="genre-btn" onclick="filterByGenre('romance')">Romance</button>
+                <button class="genre-btn" onclick="filterByGenre('sci-fi')">Sci-Fi</button>
+                <button class="genre-btn" onclick="filterByGenre('fantasy')">Fantasy</button>
+                <button class="genre-btn" onclick="filterByGenre('non-fiction')">Non-Fiction</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Library Section -->
+    <section class="library-section">
+        <!-- Featured Books -->
+        <div class="featured-section fade-in-up">
+            <div class="featured-header">
+                <h2 class="section-title">Featured This Month</h2>
+                <a href="#" class="view-all-btn">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="featured-books">
+                <div class="book-card" data-genre="sci-fi">
+                    <div class="book-cover">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">Project Hail Mary</h3>
+                        <p class="book-author">by Andy Weir</p>
+                        <span class="book-genre">Science Fiction</span>
+                        <p class="book-description">A lone astronaut must save humanity in this thrilling tale of science, friendship, and the determination to survive against impossible odds.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.6</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('Project Hail Mary')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('Project Hail Mary')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="non-fiction">
+                    <div class="book-cover">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">Atomic Habits</h3>
+                        <p class="book-author">by James Clear</p>
+                        <span class="book-genre">Self-Help</span>
+                        <p class="book-description">A comprehensive guide to building good habits and breaking bad ones, with practical strategies for personal and professional growth.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>3 copies available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('Atomic Habits')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('Atomic Habits')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="fiction">
+                    <div class="book-cover">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">Where the Crawdads Sing</h3>
+                        <p class="book-author">by Delia Owens</p>
+                        <span class="book-genre">Literary Fiction</span>
+                        <p class="book-description">A haunting tale of nature and resilience about a young woman who raised herself in the marshlands of North Carolina.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.5</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('Where the Crawdads Sing')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('Where the Crawdads Sing')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browse by Categories -->
+        <div class="categories-section fade-in-up">
+            <div class="featured-header">
+                <h2 class="section-title">Browse by Categories</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card" onclick="filterByGenre('mystery')">
+                    <div class="category-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="category-name">Mystery & Thriller</h3>
+                    <p class="category-count">342 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('romance')">
+                    <div class="category-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="category-name">Romance</h3>
+                    <p class="category-count">289 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('fantasy')">
+                    <div class="category-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3 class="category-name">Fantasy & Sci-Fi</h3>
+                    <p class="category-count">456 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('fiction')">
+                    <div class="category-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="category-name">Literary Fiction</h3>
+                    <p class="category-count">387 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('non-fiction')">
+                    <div class="category-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="category-name">Non-Fiction</h3>
+                    <p class="category-count">198 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('biography')">
+                    <div class="category-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h3 class="category-name">Biography</h3>
+                    <p class="category-count">124 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('poetry')">
+                    <div class="category-icon">
+                        <i class="fas fa-feather-alt"></i>
+                    </div>
+                    <h3 class="category-name">Poetry</h3>
+                    <p class="category-count">87 books available</p>
+                </div>
+
+                <div class="category-card" onclick="filterByGenre('young-adult')">
+                    <div class="category-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="category-name">Young Adult</h3>
+                    <p class="category-count">245 books available</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reading Corner CTA -->
+        <div class="reading-corner fade-in-up">
+            <div class="reading-corner-content">
+                <h2 class="corner-title">Create Your Reading Corner</h2>
+                <p class="corner-description">
+                    Join our community of book lovers! Reserve your favorite spot in our cozy reading areas, 
+                    complete with comfortable seating, perfect lighting, and complimentary coffee refills. 
+                    Make reading an experience, not just an activity.
+                </p>
+                <button class="corner-cta" onclick="bookReadingCorner()">Reserve Reading Corner</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Book Detail Modal -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalBookTitle">Book Title</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-book-info">
+                <div class="modal-book-cover" id="modalBookCover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="modal-book-details">
+                    <p><strong>Author:</strong> <span id="modalBookAuthor">Author Name</span></p>
+                    <p><strong>Genre:</strong> <span id="modalBookGenre">Genre</span></p>
+                    <p><strong>Pages:</strong> <span id="modalBookPages">000</span></p>
+                    <p><strong>Published:</strong> <span id="modalBookYear">Year</span></p>
+                    <p><strong>ISBN:</strong> <span id="modalBookISBN">000-0000000000</span></p>
+                </div>
+            </div>
+            <div id="modalBookDescription">
+                <p>Book description will be loaded here...</p>
+            </div>
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <button class="reserve-btn" style="flex: 1;" onclick="reserveFromModal()">Reserve This Book</button>
+                <button class="read-more-btn" style="flex: 1;" onclick="addToWishlist()">Add to Wishlist</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Book data (in real app, this would come from backend)
+        const booksDatabase = {
+            'The Silent Patient': {
+                author: 'Alex Michaelides',
+                genre: 'Psychological Thriller',
+                pages: 336,
+                year: 2019,
+                isbn: '978-1250301697',
+                description: 'Alicia Berenson\'s life is seemingly perfect. A famous painter married to an in-demand fashion photographer, she lives in a grand house overlooking a park in one of London\'s most desirable areas. One evening her husband Gabriel returns home late from a fashion shoot, and Alicia shoots him five times in the face, and then never speaks another word.',
+                icon: 'fas fa-search',
+                available: true,
+                rating: 4.8
+            },
+            'The Seven Husbands of Evelyn Hugo': {
+                author: 'Taylor Jenkins Reid',
+                genre: 'Contemporary Romance',
+                pages: 400,
+                year: 2017,
+                isbn: '978-1501139239',
+                description: 'In this entrancing novel, reclusive Hollywood icon Evelyn Hugo finally decides to tell her life story—but only to unknown journalist Monique Grant. When Monique listens to the greatest love story ever told, she begins to feel a very real connection to the legendary star.',
+                icon: 'fas fa-heart',
+                available: true,
+                rating: 4.9
+            },
+            'Project Hail Mary': {
+                author: 'Andy Weir',
+                genre: 'Science Fiction',
+                pages: 496,
+                year: 2021,
+                isbn: '978-0593135204',
+                description: 'Ryland Grace is the sole survivor on a desperate, last-chance mission—and if he fails, humanity and the earth itself will perish. Except that right now, he doesn\'t know that. He can\'t even remember his own name, let alone the nature of his assignment or how to complete it.',
+                icon: 'fas fa-rocket',
+                available: true,
+                rating: 4.6
+            }
+        };
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const bookCards = document.querySelectorAll('.book-card');
+            
+            bookCards.forEach(card => {
+                const title = card.querySelector('.book-title').textContent.toLowerCase();
+                const author = card.querySelector('.book-author').textContent.toLowerCase();
+                const genre = card.querySelector('.book-genre').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || author.includes(searchTerm) || genre.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Genre filtering
+        function filterByGenre(genre) {
+            const genreBtns = document.querySelectorAll('.genre-btn');
+            const bookCards = document.querySelectorAll('.book-card');
+            
+            // Update active button
+            genreBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter books
+            bookCards.forEach(card => {
+                const cardGenre = card.getAttribute('data-genre');
+                
+                if (genre === 'all' || cardGenre === genre) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Clear search when filtering
+            searchInput.value = '';
+        }
+
+        // Book reservation
+        function reserveBook(bookTitle) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('userType');
+            if (!isLoggedIn) {
+                if (confirm('You need to log in to reserve books. Would you like to go to the login page?')) {
+                    window.location.href = 'index.html#login';
+                }
+                return;
+            }
+            
+            // Show loading state
+            button.innerHTML = '<span class="loading-spinner"></span>';
+            button.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                button.innerHTML = 'Reserved!';
+                button.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                
+                showNotification(`"${bookTitle}" has been reserved for you!`, 'success');
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'linear-gradient(135deg, #654321, #8B4513)';
+                    button.disabled = false;
+                }, 3000);
+            }, 1500);
+        }
+
+        // Show book details
+        function showBookDetails(bookTitle) {
+            const book = booksDatabase[bookTitle];
+            if (!book) {
+                showNotification('Book details not found', 'error');
+                return;
+            }
+            
+            document.getElementById('modalBookTitle').textContent = bookTitle;
+            document.getElementById('modalBookAuthor').textContent = book.author;
+            document.getElementById('modalBookGenre').textContent = book.genre;
+            document.getElementById('modalBookPages').textContent = book.pages;
+            document.getElementById('modalBookYear').textContent = book.year;
+            document.getElementById('modalBookISBN').textContent = book.isbn;
+            document.getElementById('modalBookDescription').innerHTML = `<p>${book.description}</p>`;
+            
+            const modalCover = document.getElementById('modalBookCover');
+            modalCover.innerHTML = `<i class="${book.icon}"></i>`;
+            
+            document.getElementById('bookModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('bookModal').style.display = 'none';
+        }
+
+        // Reserve from modal
+        function reserveFromModal() {
+            const bookTitle = document.getElementById('modalBookTitle').textContent;
+            closeModal();
+            
+            // Find the book card and trigger its reserve button
+            const bookCards = document.querySelectorAll('.book-card');
+            bookCards.forEach(card => {
+                if (card.querySelector('.book-title').textContent === bookTitle) {
+                    const reserveBtn = card.querySelector('.reserve-btn');
+                    if (reserveBtn && !reserveBtn.disabled) {
+                        reserveBtn.click();
+                    }
+                }
+            });
+        }
+
+        // Add to wishlist
+        function addToWishlist() {
+            const bookTitle = document.getElementById('modalBookTitle').textContent;
+            showNotification(`"${bookTitle}" added to your wishlist!`, 'success');
+            closeModal();
+        }
+
+        // Book reading corner
+        function bookReadingCorner() {
+            // Check if user is logged in
+            const isLoggedIn = localStorage.getItem('userType');
+            if (!isLoggedIn) {
+                if (confirm('You need to log in to reserve a reading corner. Would you like to go to the login page?')) {
+                    window.location.href = 'index.html#login';
+                }
+                return;
+            }
+            
+            showNotification('Reading corner reservation system coming soon!', 'info');
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColors = {
+                success: 'linear-gradient(135deg, #4CAF50, #45a049)',
+                error: 'linear-gradient(135deg, #f44336, #da190b)',
+                info: 'linear-gradient(135deg, #654321, #8B4513)',
+                warning: 'linear-gradient(135deg, #ff9800, #f57c00)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 2rem;
+                background: ${bgColors[type]};
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 15px;
+                z-index: 5000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                font-weight: 500;
+                max-width: 350px;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Scroll animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.fade-in-up');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('bookModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', function() {
+            handleScrollAnimations();
+            
+            // Welcome message for logged-in users
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                setTimeout(() => {
+                    showNotification(`Welcome back to our library, ${userName}!`, 'info');
+                }, 1000);
+            }
+        });
+
+        window.addEventListener('scroll', handleScrollAnimations);
+
+        // Add hover effects for better interactivity
+        document.querySelectorAll('.book-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-12px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        console.log('Crumbelore Library Page initialized successfully!');
+    </script>
+</body>
+</html>-genre="mystery">
+                    <div class="bestseller-badge">Bestseller</div>
+                    <div class="book-cover">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The Silent Patient</h3>
+                        <p class="book-author">by Alex Michaelides</p>
+                        <span class="book-genre">Psychological Thriller</span>
+                        <p class="book-description">A gripping psychological thriller about a woman's act of violence against her husband and the therapist obsessed with uncovering her motive.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('The Silent Patient')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The Silent Patient')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="romance">
+                    <div class="book-cover">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The Seven Husbands of Evelyn Hugo</h3>
+                        <p class="book-author">by Taylor Jenkins Reid</p>
+                        <span class="book-genre">Contemporary Romance</span>
+                        <p class="book-description">A captivating story of Old Hollywood glamour and the price of fame, love, and ambition told through the eyes of a reclusive Hollywood icon.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>2 copies available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.9</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('The Seven Husbands of Evelyn Hugo')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The Seven Husbands of Evelyn Hugo')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="fantasy">
+                    <div class="book-cover">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The House in the Cerulean Sea</h3>
+                        <p class="book-author">by TJ Klune</p>
+                        <span class="book-genre">Fantasy Romance</span>
+                        <p class="book-description">A heartwarming fantasy about a caseworker who discovers a group of magical children and finds a family he never knew he was looking for.</p>
+                        <div class="book-status">
+                            <div class="availability unavailable">
+                                <i class="fas fa-clock"></i>
+                                <span>Reserved (Available Dec 20)</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.7</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" disabled>Join Waitlist</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The House in the Cerulean Sea')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data

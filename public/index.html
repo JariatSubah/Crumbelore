@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crumbelore - Where Stories Meet Sweet Sips</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: #FEFDF8;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 253, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #654321;
+        }
+
+        .nav-links a.active {
+            color: #654321;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(101, 67, 33, 0.4), rgba(139, 69, 19, 0.3)), 
+                        url('Images/cb.jpg') center/cover no-repeat;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(254, 253, 248, 0.1) 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            color: #2b1702;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 3px;
+        }
+
+        .tagline {
+            font-size: 1.8rem;
+            color: #c4b8af;
+            font-weight: 300;
+            font-style: italic;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            border: 2px solid #654321;
+            background: transparent;
+            color: #311a03;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-btn:hover {
+            background: #654321;
+            color: #FEFDF8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(101, 67, 33, 0.3);
+        }
+
+        .cta-btn.primary {
+            background:#8B4513;
+            color: #FEFDF8;
+        }
+
+        .cta-btn.primary:hover {
+            background: #2d1403;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #654321;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        /* About Section */
+        .about-section {
+            padding: 6rem 2rem;
+            background: #FEFDF8;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #654321;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-weight: 500;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            color: #8B4513;
+            line-height: 1.8;
+        }
+
+        .about-text h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #654321;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .about-text p {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .about-visual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: 400px;
+        }
+
+        .visual-item {
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #8B4513;
+            opacity: .9;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            object-fit: cover;
+        }
+       .visual-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+}
+        .visual-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(101,67,33,0.1) 0%, transparent 70%);
+        }
+
+        .visual-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(101, 67, 33, 0.2);
+        }
+
+        .visual-item:first-child {
+            grid-row: span 2;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: #FFFFFF;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(101, 67, 33, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(101, 67, 33, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            color: #8B4513;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #654321;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .feature-card p {
+            color: #8B4513;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 50%, #DCC5B0 100%);
+            position: relative;
+        }
+
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="login-pattern" patternUnits="userSpaceOnUse" width="50" height="50"><circle cx="10" cy="10" r="1" fill="rgba(101,67,33,0.05)"/><rect x="20" y="20" width="6" height="8" rx="1" fill="rgba(139,69,19,0.03)"/><circle cx="35" cy="35" r="0.8" fill="rgba(101,67,33,0.04)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23login-pattern)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .login-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 25px;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(101, 67, 33, 0.1);
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(101, 67, 33, 0.15);
+        }
+
+        .login-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #654321;
+            font-weight: 500;
+        }
+
+        .login-card h3 i {
+            margin-right: 0.5rem;
+            color: #8B4513;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: #654321;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            padding: 1rem;
+            border: 2px solid rgba(101, 67, 33, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #654321;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8B4513;
+            background: #FFFFFF;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(101, 67, 33, 0.3);
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: #8B4513;
+        }
+
+        .login-link a {
+            color: #654321;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 6rem 2rem;
+            background: #654321;
+            color: #FEFDF8;
+            position: relative;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="contact-pattern" patternUnits="userSpaceOnUse" width="30" height="30"><circle cx="5" cy="5" r="0.8" fill="rgba(254,253,248,0.05)"/><rect x="15" y="10" width="4" height="5" rx="0.5" fill="rgba(254,253,248,0.03)"/><circle cx="20" cy="25" r="0.6" fill="rgba(254,253,248,0.04)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23contact-pattern)"/></svg>') repeat;
+            opacity: 0.4;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-info h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #F5E6D3;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .contact-item i {
+            color: #E8D5C4;
+            font-size: 1.3rem;
+            width: 25px;
+            margin-top: 0.2rem;
+        }
+
+        .contact-item span {
+            line-height: 1.6;
+            color: #F5E6D3;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: #E8D5C4;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: rgba(248, 230, 211, 0.1);
+        }
+
+        .social-links a:hover {
+            color: #F5E6D3;
+            transform: translateY(-3px);
+            background: rgba(248, 230, 211, 0.2);
+        }
+
+        .newsletter {
+            background: rgba(245, 230, 211, 0.1);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(245, 230, 211, 0.2);
+        }
+
+        .newsletter h4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter p {
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            color: #E8D5C4;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .newsletter input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid rgba(245, 230, 211, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FEFDF8;
+            font-size: 1rem;
+        }
+
+        .newsletter input::placeholder {
+            color: rgba(254, 253, 248, 0.7);
+        }
+
+        .newsletter input:focus {
+            outline: none;
+            border-color: #E8D5C4;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .newsletter button {
+            background: linear-gradient(135deg, #E8D5C4 0%, #F5E6D3 100%);
+            color: #654321;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .newsletter button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 230, 211, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+            }
+            .logo { font-size: 3rem; }
+            .tagline { font-size: 1.3rem; }
+            .section-title { font-size: 2.5rem; }
+            .about-content { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+            .about-visual { height: 300px; }
+            .login-container { grid-template-columns: 1fr; gap: 2rem; }
+            .contact-content { grid-template-columns: 1fr; gap: 3rem; }
+            .newsletter-form { flex-direction: column; }
+            .hero-cta { flex-direction: column; align-items: center; }
+        }
+
+        /* Scroll Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 1s ease;
+        }
+
+        .fade-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 1s ease;
+        }
+
+        .fade-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Loading State */
+        .login-btn.loading {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            position: relative;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">Crumbelore</a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="event.html">Events</a></li>
+                <li><a href="library.html">Library</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="checkout.html">Checkout</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+</ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="logo">Crumbelore</h1>
+            <p class="tagline">Where Stories Meet Sweet Sips</p>
+            <div class="hero-cta">
+                <a href="#about" class="cta-btn primary">Discover Our Story</a>
+                <a href="#login" class="cta-btn">Join Our Community</a>
+            </div>
+        </div>
+        
+                    <i class="fas fa-chevron-down"></i>
+                    <a href="#about" class="scroll-indicator"><i class="fas fa-chevron-down"></i></a>
+
+      <div class="scroll-indicator" onclick="scrollToSection('about')">
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <h2 class="section-title fade-in-up">About Crumbelore</h2>
+            
+            <div class="about-content">
+                <div class="about-text fade-in-left">
+                    <h3>Our Story</h3>
+                    <p>Welcome to Crumbelore, where the magic of literature meets the artistry of coffee and the sweetness of handcrafted desserts. Born from a passion for creating cozy corners where stories come alive, we've curated a unique experience that feeds both your mind and soul.</p>
+                    
+                    <p>Every cup tells a story, every dessert sparks imagination, and every book opens a new world. Whether you're diving into a thrilling mystery with our dark roast and chocolate tart, or savoring a romance novel with our signature vanilla latte and red velvet cake, we've crafted the perfect pairings for every literary adventure.</p>
+                </div>
+                
+                <div class="about-visual fade-in-right">
+                    <div class="visual-item">
+                        <video muted loop autoplay>
+            <source src="Videos/coffee.mp4" type="video/mp4">
+                    <i class="fas fa-coffee"></i></video>
+                    </div>
+                    <div class="visual-item">
+             <video muted loop autoplay>
+            <source src="Videos/book.mp4" type="video/mp4">
+                        <i class="fas fa-book"></i></video>
+                    </div>
+                    <div class="visual-item">
+                        <video muted loop autoplay>
+            <source src="Videos/cake.mp4" type="video/mp4">
+                        <i class="fas fa-birthday-cake"></i></video>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4>Curated Library</h4>
+                    <p>Thousands of books across all genres, from bestsellers to hidden gems, carefully selected for every reading taste and perfectly paired with our signature beverages.</p>
+                </div>
+
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <h4>Artisan Coffee</h4>
+                    <p>Expertly roasted beans from around the world, crafted into perfect brews that complement your reading experience with every carefully measured sip.</p>
+                </div>
+
+                <div class="feature-card fade-in-up">
+                    <div class="feature-icon">
+                        <i class="fas fa-cookie-bite"></i>
+                    </div>
+                    <h4>Sweet Creations</h4>
+                    <p>Handcrafted desserts and pastries made fresh daily, designed to pair perfectly with your favorite literary genres and enhance every chapter.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="login-section" id="login">
+        <div class="container">
+            <h2 class="section-title fade-in-up">Join Our Community</h2>
+            
+            <div class="login-container">
+                <div class="login-card fade-in-up">
+                    <h3><i class="fas fa-user"></i> Customer Portal</h3>
+                    <form class="login-form" onsubmit="customerLogin(event)">
+                        <div class="form-group">
+                            <label for="customer-email">Email Address</label>
+                            <input type="email" id="customer-email" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customer-password">Password</label>
+                            <input type="password" id="customer-password" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="login-btn">Sign In</button>
+                    </form>
+                    <div class="login-link">
+                        New to Crumbelore? <a href="#" onclick="showSignupForm()">Create an account</a>
+                    </div>
+                </div>
+
+                <div class="login-card fade-in-up">
+                    <h3><i class="fas fa-user-shield"></i> Admin Access</h3>
+                    <form class="login-form" onsubmit="adminLogin(event)">
+                        <div class="form-group">
+                            <label for="admin-email">Admin Email</label>
+                            <input type="email" id="admin-email" placeholder="admin@crumbelore.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-password">Admin Password</label>
+                            <input type="password" id="admin-password" placeholder="Admin password" required>
+                        </div>
+                        <button type="submit" class="login-btn">Admin Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 class="section-title fade-in-up">Get In Touch</h2>
+            
+            <div class="contact-content">
+                <div class="contact-info fade-in-up">
+                    <h4>Visit Our Café</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>123 Literary Lane<br>Book District, Chattogram<br>Bangladesh 4000</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+880-31-123-4567</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>hello@crumbelore.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Daily: 7:00 AM - 11:00 PM<br>Reading Hours Extended</span>
+                    </div>
+                </div>
+
+                <div class="contact-info fade-in-up">
+                    <h4>Connect With Us</h4>
+                    <p>Follow our literary journey and stay updated with new book arrivals, seasonal coffee blends, special dessert creations, and community events.</p>
+                    <div class="social-links">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Goodreads"><i class="fab fa-goodreads"></i></a>
+                    </div>
+                </div>
+
+                <div class="newsletter fade-in-up">
+                    <h4>Literary Newsletter</h4>
+                    <p>Get personalized book recommendations, exclusive coffee blends, seasonal dessert updates, and early access to our literary events.</p>
+                    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                        <input type="email" placeholder="Enter your email address" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Demo credentials for testing
+        const DEMO_CREDENTIALS = {
+            customer: {
+                email: 'customer@crumbelore.com',
+                password: 'customer123'
+            },
+            admin: {
+                email: 'admin@crumbelore.com',
+                password: 'admin123'
+            }
+        };
+
+        // Smooth scrolling
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Enhanced scroll animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.fade-in-up, .fade-in-left, .fade-in-right');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColors = {
+                success: 'linear-gradient(135deg, #4CAF50, #45a049)',
+                error: 'linear-gradient(135deg, #f44336, #da190b)',
+                info: 'linear-gradient(135deg, #654321, #8B4513)',
+                warning: 'linear-gradient(135deg, #ff9800, #f57c00)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 2rem;
+                background: ${bgColors[type]};
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 15px;
+                z-index: 5000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                font-weight: 500;
+                max-width: 350px;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Customer login function with working authentication
+        function customerLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('customer-email').value;
+            const password = document.getElementById('customer-password').value;
+            const button = event.target.querySelector('.login-btn');
+            
+            // Show loading state
+            button.classList.add('loading');
+            button.textContent = 'Signing in...';
+            button.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Check demo credentials or allow any @crumbelore.com email
+                if ((email === DEMO_CREDENTIALS.customer.email && password === DEMO_CREDENTIALS.customer.password) || 
+                    email.endsWith('@crumbelore.com')) {
+                    
+                    showNotification('Login successful! Redirecting to dashboard...', 'success');
+                    
+                    // Store user info (in real app, this would be handled by backend)
+                    localStorage.setItem('userType', 'customer');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userName', email.split('@')[0]);
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                    
+                } else {
+                    showNotification('Invalid credentials. Try: customer@crumbelore.com / customer123', 'error');
+                    
+                    // Reset button
+                    button.classList.remove('loading');
+                    button.textContent = 'Sign In';
+                    button.disabled = false;
+                }
+            }, 1500);
+        }
+
+        // Admin login function
+        function adminLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const button = event.target.querySelector('.login-btn');
+            
+            // Show loading state
+            button.classList.add('loading');
+            button.textContent = 'Verifying...';
+            button.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Check admin credentials
+                if (email === DEMO_CREDENTIALS.admin.email && password === DEMO_CREDENTIALS.admin.password) {
+                    
+                    showNotification('Admin access granted! Redirecting...', 'success');
+                     window.location.href = 'admin-dashboard.html';
+                    // Store admin info
+                    localStorage.setItem('userType', 'admin');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userName', 'Admin');
+                    
+                    // Redirect to admin dashboard (you can create this later)
+                    setTimeout(() => {
+                        showNotification('Admin dashboard coming soon! Redirecting to customer dashboard...', 'info');
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                    
+                } else {
+                    showNotification('Invalid admin credentials. Try: admin@crumbelore.com / admin123', 'error');
+                    
+                    // Reset button
+                    button.classList.remove('loading');
+                    button.textContent = 'Admin Login';
+                    button.disabled = false;
+                }
+            }, 1500);
+        }
+
+        // Newsletter subscription
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            
+            showNotification(`Thank you for subscribing to our literary newsletter: ${email}`, 'success');
+            console.log('Newsletter subscription:', { email });
+            event.target.reset();
+        }
+
+        // Show signup form (placeholder)
+        function showSignupForm() {
+            showNotification('Signup form coming soon! For now, use: customer@crumbelore.com / customer123', 'info');
+        }
+
+        // Handle navigation clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Handle navigation to other pages
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                });
+            });
+
+            // Initialize animations
+            handleScrollAnimations();
+        });
+
+        // Initialize animations on scroll and load
+        window.addEventListener('scroll', handleScrollAnimations);
+        window.addEventListener('load', handleScrollAnimations);
+
+        // Add parallax effect to hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const heroContent = document.querySelector('.hero-content');
+            
+            if (hero && heroContent) {
+                heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+                hero.style.opacity = 1 - scrolled / window.innerHeight;
+            }
+        });
+
+        // Add smooth transitions on page load
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+            handleScrollAnimations();
+        });
+
+        // Initial page load effect
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.5s ease';
+
+        // Demo credentials helper
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showNotification('Demo credentials: customer@crumbelore.com / customer123', 'info');
+            }, 2000);
+        });
+    </script>
+    <script src="js/auth.js"></script>
+<script src="js/bookSystem.js"></script>
+</body>
+</html>

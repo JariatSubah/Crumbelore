@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Crumbelore</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: #FEFDF8;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 253, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #654321;
+        }
+
+        .nav-links a.active {
+            color: #654321;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #654321;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E8D5C4, #F5E6D3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #654321;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 2px solid #654321;
+            color: #654321;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #654321;
+            color: #FEFDF8;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            margin-top: 100px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #FFFFFF;
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(101, 67, 33, 0.08);
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E8D5C4, #F5E6D3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #654321;
+            margin: 0 auto 1rem;
+            border: 3px solid #F5E6D3;
+        }
+
+        .user-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #654321;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-level {
+            color: #8B4513;
+            font-size: 0.9rem;
+            background: rgba(101, 67, 33, 0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .connection-status {
+            margin: 1rem 0;
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .connection-status.online {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .connection-status.offline {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+
+        .sidebar-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(245, 230, 211, 0.3);
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            color: #8B4513;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: #654321;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 1rem;
+            color: #8B4513;
+            background: none;
+            border: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+        }
+
+        .sidebar-menu button:hover,
+        .sidebar-menu button.active {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: #FEFDF8;
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu i {
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: #FFFFFF;
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(101, 67, 33, 0.08);
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #654321;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text {
+            color: #8B4513;
+            font-size: 1.1rem;
+        }
+
+        .sync-btn, .action-btn {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .sync-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(101, 67, 33, 0.3);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards, .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card, .content-card {
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before, .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(101,67,33,0.1) 0%, transparent 50%);
+        }
+
+        .dashboard-card:hover, .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(101, 67, 33, 0.15);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            color: #8B4513;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #654321;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #654321;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card-description {
+            color: #8B4513;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #654321;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Reading Progress */
+        .reading-book {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5E6D3 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            display: grid;
+            grid-template-columns: 150px 1fr auto;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .book-cover {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(135deg, #8B4513, #654321);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FEFDF8;
+            font-size: 4rem;
+            box-shadow: 0 10px 25px rgba(101, 67, 33, 0.3);
+        }
+
+        .book-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #654321;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .book-info .author {
+            color: #8B4513;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .progress-container {
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(#654321 0deg, #654321 252deg, rgba(101, 67, 33, 0.1) 252deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: '';
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            position: absolute;
+        }
+
+        .progress-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #654321;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Book Items & Order Items */
+        .book-item, .order-item, .reservation-item {
+            background: rgba(245, 230, 211, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .book-cover-small {
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(135deg, #654321, #8B4513);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FEFDF8;
+            font-size: 1.5rem;
+        }
+
+        .order-icon, .reservation-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #654321, #8B4513);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FEFDF8;
+            font-size: 1.2rem;
+        }
+
+        .item-info h4 {
+            color: #654321;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-info p {
+            color: #8B4513;
+            font-size: 0.9rem;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-reading {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        .status-completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .status-wishlist {
+            background: rgba(255, 193, 7, 0.1);
+            color: #FFC107;
+        }
+
+        .status-confirmed {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #654321;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(101, 67, 33, 0.2);
+            border-radius: 10px;
+            background: #FEFDF8;
+            color: #654321;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        /* Content View System */
+        .content-view {
+            display: none;
+        }
+
+        .content-view.active {
+            display: block;
+        }
+
+        /* Settings Cards */
+        .settings-card {
+            background: #FFFFFF;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(101, 67, 33, 0.08);
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .settings-card h3 {
+            color: #654321;
+            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .reading-book {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .book-cover {
+                width: 120px;
+                height: 160px;
+                margin: 0 auto;
+                font-size: 3rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .user-profile span {
+                display: none;
+            }
+
+            .book-item, .order-item, .reservation-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(101, 67, 33, 0.3);
+            border-radius: 50%;
+            border-top-color: #654321;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .p-4 { padding: 2rem; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">Crumbelore</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="event.html">Events</a></li>
+                <li><a href="library.html">Library</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="dashboard.html" class="active">My Account</a></li>
+            </ul>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span id="navUserName">Welcome, User</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="profile-pic">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-name" id="sidebarUserName">Customer User</div>
+                <div class="user-level" id="userLevel">Literary Explorer</div>
+                <div class="connection-status" id="connectionStatus">
+                    <i class="fas fa-wifi"></i> Checking connection...
+                </div>
+            </div>
+
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Books Read</span>
+                    <span class="stat-value" id="booksRead">47</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Loyalty Points</span>
+                    <span class="stat-value" id="loyaltyPoints">2,340</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Favorite Genre</span>
+                    <span class="stat-value" id="favoriteGenre">Mystery</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><button class="active" onclick="showSection('dashboard')">
+                    <i class="fas fa-home"></i> Dashboard
+                </button></li>
+                <li><button onclick="showSection('reading')">
+                    <i class="fas fa-book-open"></i> Current Reading
+                </button></li>
+                <li><button onclick="showSection('library')">
+                    <i class="fas fa-books"></i> My Library
+                </button></li>
+                <li><button onclick="showSection('orders')">
+                    <i class="fas fa-coffee"></i> Order History
+                </button></li>
+                <li><button onclick="showSection('reservations')">
+                    <i class="fas fa-calendar"></i> Reservations
+                </button></li>
+                <li><button onclick="showSection('preferences')">
+                    <i class="fas fa-heart"></i> Preferences
+                </button></li>
+                <li><button onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i> Settings
+                </button></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboard" class="content-view active">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">My Literary Dashboard</h1>
+                        <p class="welcome-text" id="welcomeText">Welcome back to your reading sanctuary!</p>
+                    </div>
+                    <button class="sync-btn" onclick="syncWithServer()">
+                        <i class="fas fa-sync-alt"></i> Sync with Server
+                    </button>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="card-title">Books This Month</h3>
+                        <div class="card-value">4</div>
+                        <p class="card-description">2 more than last month!</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <h3 class="card-title">Coffee Orders</h3>
+                        <div class="card-value">23</div>
+                        <p class="card-description">Your favorite: Vanilla Dream Latte</p>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="card-title">Book Club Events</h3>
+                        <div class="card-value">8</div>
+                        <p class="card-description">Next: Mystery Night - Friday 7PM</p>
+                    </div>
+                </div>
+
+                <!-- Current Reading -->
+                <div class="current-reading">
+                    <h2 class="section-title">
+                        <i class="fas fa-book-reader"></i> Currently Reading
+                    </h2>
+                    
+                    <div class="reading-book">
+                        <div class="book-cover">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="book-info">
+                            <h3>The Silent Patient</h3>
+                            <p class="author">by Alex Michaelides</p>
+                            <span class="status-badge status-reading">Reading</span>
+                            <p style="color: #8B4513; margin-top: 1rem;">A gripping psychological thriller about a woman's act of violence against her husband.</p>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-circle" id="mainProgressCircle">
+                                <span class="progress-text">70%</span>
+                            </div>
+                            <p style="color: #8B4513; font-size: 0.9rem;">245 of 350 pages</p>
+                            <p style="color: #8B4513; font-size: 0.8rem; margin-top: 0.5rem;">3 days to goal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="recent-orders">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i> Recent Orders
+                    </h2>
+                    
+                    <div class="order-item">
+                        <div class="order-icon">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div class="item-info">
+                            <h4>Mystery Solver's Kit</h4>
+                            <p>Classic Espresso + Dark Chocolate Tart + Book</p>
+                            <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Today, 2:30 PM</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="status-badge status-completed">Completed</span>
+                            <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳580</p>
+                        </div>
+                    </div>
+
+                    <div class="order-item">
+                        <div class="order-icon">
+                            <i class="fas fa-coffee"></i>
+                        </div>
+                        <div class="item-info">
+                            <h4>Vanilla Dream Latte</h4>
+                            <p>Large size with extra foam</p>
+                            <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Yesterday, 4:15 PM</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="status-badge status-completed">Completed</span>
+                            <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳280</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Reading View -->
+            <div id="reading" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Current Reading</h1>
+                        <p class="welcome-text">Track your reading progress and set goals</p>
+                    </div>
+                </div>
+
+                <div class="reading-book">
+                    <div class="book-cover">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>The Silent Patient</h3>
+                        <p class="author">by Alex Michaelides</p>
+                        <span class="status-badge status-reading">Currently Reading</span>
+                        <p style="color: #8B4513; margin-top: 1rem;">A gripping psychological thriller about a woman's act of violence against her husband and the psychotherapist obsessed with treating her.</p>
+                        
+                        <div style="margin-top: 2rem;">
+                            <h4 style="color: #654321; margin-bottom: 1rem;">Reading Actions</h4>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="action-btn" onclick="updateProgress(75)">
+                                    <i class="fas fa-plus"></i> Update Progress
+                                </button>
+                                <button class="action-btn" onclick="addNote()">
+                                    <i class="fas fa-sticky-note"></i> Add Note
+                                </button>
+                                <button class="action-btn" onclick="markCompleted()">
+                                    <i class="fas fa-check"></i> Mark Complete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-circle" id="readingProgress">
+                            <span class="progress-text">70%</span>
+                        </div>
+                        <p style="color: #8B4513; font-size: 0.9rem;">245 of 350 pages</p>
+                        <p style="color: #8B4513; font-size: 0.8rem; margin-top: 0.5rem;">Goal: Finish by Dec 20</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #654321; margin: 2rem 0 1rem 0;">Reading Notes</h3>
+                <div style="background: rgba(245, 230, 211, 0.3); padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(101, 67, 33, 0.1);">
+                    <p style="color: #8B4513; font-style: italic;">"The characters are incredibly well-developed. The unreliable narrator keeps me guessing. This psychological thriller is definitely worth the hype!"</p>
+                    <small style="color: #8B4513; opacity: 0.8;">Added on Dec 15, 2024</small>
+                </div>
+            </div>
+
+            <!-- Library View -->
+            <div id="library" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">My Library</h1>
+                        <p class="welcome-text">Your personal book collection and wishlist</p>
+                    </div>
+                    <button class="action-btn" onclick="addToLibrary()">
+                        <i class="fas fa-plus"></i> Add Book
+                    </button>
+                </div>
+
+                <div class="content-grid" style="margin-bottom: 3rem;">
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="card-title">Currently Reading</h3>
+                        <div class="card-value">2</div>
+                        <p class="card-description">Books in progress</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="card-title">Completed</h3>
+                        <div class="card-value">47</div>
+                        <p class="card-description">Books finished this year</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="card-title">Wishlist</h3>
+                        <div class="card-value">12</div>
+                        <p class="card-description">Books to read next</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #654321; margin: 2rem 0 1rem 0;">My Books</h3>
+                
+                <div class="book-item">
+                    <div class="book-cover-small">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>The Silent Patient</h4>
+                        <p>by Alex Michaelides • Psychological Thriller</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">70% complete • Started Dec 10</p>
+                    </div>
+                    <span class="status-badge status-reading">Reading</span>
+                </div>
+
+                <div class="book-item">
+                    <div class="book-cover-small">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>The Seven Husbands of Evelyn Hugo</h4>
+                        <p>by Taylor Jenkins Reid • Contemporary Romance</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Finished Dec 5 • Rating: 5/5</p>
+                    </div>
+                    <span class="status-badge status-completed">Completed</span>
+                </div>
+
+                <div class="book-item">
+                    <div class="book-cover-small">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Dune</h4>
+                        <p>by Frank Herbert • Science Fiction</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Added to wishlist Nov 28</p>
+                    </div>
+                    <span class="status-badge status-wishlist">Wishlist</span>
+                </div>
+
+                <div class="book-item">
+                    <div class="book-cover-small">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>The Name of the Wind</h4>
+                        <p>by Patrick Rothfuss • Fantasy</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">25% complete • Started Dec 14</p>
+                    </div>
+                    <span class="status-badge status-reading">Reading</span>
+                </div>
+
+                <div class="book-item">
+                    <div class="book-cover-small">
+                        <i class="fas fa-skull"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Gone Girl</h4>
+                        <p>by Gillian Flynn • Psychological Thriller</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Finished Nov 22 • Rating: 4/5</p>
+                    </div>
+                    <span class="status-badge status-completed">Completed</span>
+                </div>
+            </div>
+
+            <!-- Orders View -->
+            <div id="orders" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Order History</h1>
+                        <p class="welcome-text">View and manage your coffee and food orders</p>
+                    </div>
+                    <button class="action-btn" onclick="viewFullHistory()">
+                        <i class="fas fa-download"></i> Export History
+                    </button>
+                </div>
+
+                <div class="content-grid" style="margin-bottom: 3rem;">
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h3 class="card-title">Total Orders</h3>
+                        <div class="card-value">156</div>
+                        <p class="card-description">Since joining Crumbelore</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <h3 class="card-title">Total Spent</h3>
+                        <div class="card-value">৳12,450</div>
+                        <p class="card-description">This year</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="card-title">Favorite Item</h3>
+                        <div class="card-value" style="font-size: 1.2rem;">Vanilla Latte</div>
+                        <p class="card-description">Ordered 23 times</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #654321; margin: 2rem 0 1rem 0;">Recent Orders</h3>
+                
+                <div class="order-item">
+                    <div class="order-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Mystery Solver's Kit</h4>
+                        <p>Classic Espresso + Dark Chocolate Tart + Book Bundle</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Today, 2:30 PM • Order #CR-2024-001</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-completed">Completed</span>
+                        <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳580</p>
+                    </div>
+                </div>
+
+                <div class="order-item">
+                    <div class="order-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Vanilla Dream Latte</h4>
+                        <p>Large size with extra foam and vanilla syrup</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Yesterday, 4:15 PM • Order #CR-2024-002</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-completed">Completed</span>
+                        <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳280</p>
+                    </div>
+                </div>
+
+                <div class="order-item">
+                    <div class="order-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Romance Reader's Delight</h4>
+                        <p>Vanilla Latte + Red Velvet Cake + Romance Novel</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Dec 13, 3:20 PM • Order #CR-2024-003</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-completed">Completed</span>
+                        <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳650</p>
+                    </div>
+                </div>
+
+                <div class="order-item">
+                    <div class="order-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Espresso & Croissant</h4>
+                        <p>Double shot espresso with butter croissant</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Dec 12, 8:45 AM • Order #CR-2024-004</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-completed">Completed</span>
+                        <p style="color: #654321; font-weight: 600; margin-top: 0.5rem; font-size: 1.2rem;">৳320</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservations View -->
+            <div id="reservations" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">My Reservations</h1>
+                        <p class="welcome-text">View and manage table and space bookings</p>
+                    </div>
+                    <button class="action-btn" onclick="makeReservation()">
+                        <i class="fas fa-plus"></i> New Reservation
+                    </button>
+                </div>
+
+                <div class="content-grid" style="margin-bottom: 3rem;">
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="card-title">Upcoming</h3>
+                        <div class="card-value">2</div>
+                        <p class="card-description">Reservations this month</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <h3 class="card-title">Favorite Spot</h3>
+                        <div class="card-value" style="font-size: 1.2rem;">Window Nook</div>
+                        <p class="card-description">Most booked table</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="card-title">Avg. Duration</h3>
+                        <div class="card-value" style="font-size: 1.5rem;">2.5 hrs</div>
+                        <p class="card-description">Per visit</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #654321; margin: 2rem 0 1rem 0;">Upcoming Reservations</h3>
+                
+                <div class="reservation-item">
+                    <div class="reservation-icon" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Book Club Meeting</h4>
+                        <p>Private Reading Room • 6 people • Mystery Night Theme</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Friday, Dec 20 - 7:00 PM to 9:00 PM</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-confirmed">Confirmed</span>
+                        <button class="action-btn" style="margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="modifyReservation('book-club')">
+                            <i class="fas fa-edit"></i> Modify
+                        </button>
+                    </div>
+                </div>
+
+                <div class="reservation-item">
+                    <div class="reservation-icon" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Solo Reading Session</h4>
+                        <p>Window Nook Table • 1 person • Quiet zone</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Saturday, Dec 21 - 2:00 PM to 4:00 PM</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-confirmed">Confirmed</span>
+                        <button class="action-btn" style="margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="modifyReservation('solo-reading')">
+                            <i class="fas fa-edit"></i> Modify
+                        </button>
+                    </div>
+                </div>
+
+                <h3 style="color: #654321; margin: 3rem 0 1rem 0;">Past Reservations</h3>
+                
+                <div class="reservation-item">
+                    <div class="reservation-icon" style="background: linear-gradient(135deg, #4CAF50, #45a049);">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="item-info">
+                        <h4>Study Session</h4>
+                        <p>Corner Table • 2 hours • Completed</p>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.3rem;">Dec 15 - 3:00 PM to 5:00 PM</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="status-badge status-completed">Completed</span>
+                        <button class="action-btn" style="margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="bookAgain('study-session')">
+                            <i class="fas fa-repeat"></i> Book Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences View -->
+            <div id="preferences" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Preferences</h1>
+                        <p class="welcome-text">Customize your Crumbelore experience</p>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Reading Preferences</h3>
+                    
+                    <div class="form-group">
+                        <label>Favorite Genres</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                            <span class="status-badge status-completed">Mystery & Thriller</span>
+                            <span class="status-badge status-reading">Romance</span>
+                            <span class="status-badge status-wishlist">Fantasy</span>
+                            <span class="status-badge status-confirmed">Science Fiction</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Monthly Reading Goal</label>
+                        <select>
+                            <option>2 books</option>
+                            <option>3 books</option>
+                            <option selected>4 books</option>
+                            <option>5 books</option>
+                            <option>6+ books</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preferred Reading Time</label>
+                        <select>
+                            <option>Morning (8-11 AM)</option>
+                            <option selected>Afternoon (2-5 PM)</option>
+                            <option>Evening (6-9 PM)</option>
+                            <option>Night (9+ PM)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Coffee & Food Preferences</h3>
+                    
+                    <div class="form-group">
+                        <label>Favorite Coffee Type</label>
+                        <select>
+                            <option>Espresso</option>
+                            <option selected>Latte</option>
+                            <option>Cappuccino</option>
+                            <option>Americano</option>
+                            <option>Cold Brew</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Milk Preference</label>
+                        <select>
+                            <option>Regular Milk</option>
+                            <option>Almond Milk</option>
+                            <option selected>Oat Milk</option>
+                            <option>Soy Milk</option>
+                            <option>Coconut Milk</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Dietary Restrictions</label>
+                        <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
+                                <input type="checkbox" style="width: auto;">
+                                <span>Vegetarian</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
+                                <input type="checkbox" style="width: auto;">
+                                <span>Vegan</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0;">
+                                <input type="checkbox" style="width: auto;">
+                                <span>Gluten-Free</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Notification Preferences</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>New book arrivals in favorite genres</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Book club event reminders</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" style="width: auto;">
+                            <span>Special offers and promotions</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Reading goal progress updates</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Reservation confirmations and reminders</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="action-btn" style="width: fit-content;" onclick="savePreferences()">
+                    <i class="fas fa-save"></i> Save All Preferences
+                </button>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settings" class="content-view">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Account Settings</h1>
+                        <p class="welcome-text">Manage your account and privacy settings</p>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Personal Information</h3>
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" value="Customer User" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" value="customer@crumbelore.com" placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" value="+880 1234-567890" placeholder="Enter your phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" value="1995-06-15">
+                    </div>
+
+                    <button class="action-btn" style="width: fit-content;" onclick="updateProfile()">
+                        <i class="fas fa-user-edit"></i> Update Profile
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Security Settings</h3>
+                    
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" placeholder="Enter current password">
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" placeholder="Enter new password">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" placeholder="Confirm new password">
+                    </div>
+
+                    <button class="action-btn" style="width: fit-content;" onclick="changePassword()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Privacy Settings</h3>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Share reading activity with friends</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Allow personalized recommendations</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" style="width: auto;">
+                            <span>Enable location-based services</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
+                            <input type="checkbox" checked style="width: auto;">
+                            <span>Marketing communications</span>
+                        </label>
+                    </div>
+
+                    <button class="action-btn" style="width: fit-content; margin-top: 1rem;" onclick="updatePrivacy()">
+                        <i class="fas fa-shield-alt"></i> Update Privacy Settings
+                    </button>
+                </div>
+
+                <div class="settings-card" style="border: 2px solid #f44336;">
+                    <h3 style="color: #f44336;">Danger Zone</h3>
+                    
+                    <p style="color: #8B4513; margin-bottom: 1rem;">These actions cannot be undone. Please be certain before proceeding.</p>
+                    
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="action-btn" style="background: linear-gradient(135deg, #f44336, #d32f2f);" onclick="deleteAccount()">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                        <button class="action-btn" style="background: linear-gradient(135deg, #ff9800, #f57c00);" onclick="resetData()">
+                            <i class="fas fa-undo"></i> Reset All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       // Localhost configuration
+        const API_BASE_URL = 'http://localhost:3000/api';
+        const USER_CREDENTIALS = {
+            username: 'customer@crumbelore.com',
+            password: 'customer123'
+        };
+
+        // User data storage
+        let userData = {
+            name: 'Customer User',
+            email: 'customer@localhost',
+            level: 'Literary Explorer',
+            booksRead: 0,
+            loyaltyPoints: 0,
+            favoriteGenre: 'Loading...',
+            currentBook: null
+        };
+
+        // Server connection status
+        let isServerConnected = false;
+
+        // Check customer authentication for localhost
+        function checkCustomerAccess() {
+            // Check if running on localhost
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                              window.location.hostname === '127.0.0.1' || 
+                              window.location.hostname === '';
+
+            if (!isLocalhost) {
+                showNotification('This dashboard requires localhost server', 'error');
+                return false;
+            }
+
+            // Check for customer session
+            const customerSession = sessionStorage.getItem('customerAuthenticated');
+            const customerUser = sessionStorage.getItem('customerUser');
+
+            if (!customerSession || !customerUser) {
+                // Redirect to login
+                promptCustomerLogin();
+                return false;
+            }
+
+            return true;
+        }
+
+        // Customer login prompt for localhost
+        function promptCustomerLogin() {
+            const username = prompt('Customer Username:');
+            const password = prompt('Customer Password:');
+
+            if (username === USER_CREDENTIALS.username && password === USER_CREDENTIALS.password) {
+                sessionStorage.setItem('customerAuthenticated', 'true');
+                sessionStorage.setItem('customerUser', username);
+                userData.name = username;
+                userData.email = `${username}@localhost`;
+                showNotification('Customer login successful', 'success');
+                initDashboard();
+            } else {
+                showNotification('Invalid customer credentials', 'error');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        }
+
+        // API Functions for localhost server
+        async function makeAPIRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${sessionStorage.getItem('customerToken') || 'customer-token'}`
+                    }
+                };
+
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                isServerConnected = true;
+                updateConnectionStatus(true);
+                return await response.json();
+            } catch (error) {
+                console.error('API Request failed:', error);
+                isServerConnected = false;
+                updateConnectionStatus(false);
+                return null;
+            }
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (connected) {
+                statusElement.className = 'connection-status online';
+                statusElement.innerHTML = '<i class="fas fa-wifi"></i> Connected to localhost:3000';
+            } else {
+                statusElement.className = 'connection-status offline';
+                statusElement.innerHTML = '<i class="fas fa-wifi"></i> Server offline - using cached data';
+            }
+        }
+
+        // Navigation between sections
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show selected section
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+            }
+            
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar-menu button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Find and activate the correct button
+            const activeBtn = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        // Load user data from server
+        async function loadUserData() {
+            showNotification('Loading your data from server...', 'info');
+            
+            const serverData = await makeAPIRequest('/user/profile');
+            if (serverData) {
+                userData = { ...userData, ...serverData };
+                showNotification('Data synchronized with server', 'success');
+            } else {
+                // Use default/cached data
+                userData.booksRead = 47;
+                userData.loyaltyPoints = 2340;
+                userData.favoriteGenre = 'Mystery';
+                showNotification('Using cached data - server offline', 'warning');
+            }
+            
+            updateUserInterface();
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            const stats = await makeAPIRequest('/user/dashboard-stats');
+            
+            if (stats) {
+                document.getElementById('monthlyBooks').textContent = stats.monthlyBooks || 4;
+                document.getElementById('monthlyBooksDesc').textContent = `${stats.monthlyIncrease || 2} more than last month!`;
+                
+                document.getElementById('coffeeOrders').textContent = stats.coffeeOrders || 23;
+                document.getElementById('coffeeOrdersDesc').textContent = `Your favorite: ${stats.favoriteCoffee || 'Vanilla Dream Latte'}`;
+                
+                document.getElementById('bookClubEvents').textContent = stats.bookClubEvents || 8;
+                document.getElementById('bookClubDesc').textContent = `Next: ${stats.nextEvent || 'Mystery Night - Friday 7PM'}`;
+            } else {
+                // Default values when server is offline
+                document.getElementById('monthlyBooks').textContent = '4';
+                document.getElementById('monthlyBooksDesc').textContent = '2 more than last month!';
+                
+                document.getElementById('coffeeOrders').textContent = '23';
+                document.getElementById('coffeeOrdersDesc').textContent = 'Your favorite: Vanilla Dream Latte';
+                
+                document.getElementById('bookClubEvents').textContent = '8';
+                document.getElementById('bookClubDesc').textContent = 'Next: Mystery Night - Friday 7PM';
+            }
+        }
+
+        // Load current reading from server
+        async function loadCurrentReading() {
+            const currentReading = await makeAPIRequest('/user/current-reading');
+            
+            if (currentReading && currentReading.book) {
+                const book = currentReading.book;
+                userData.currentBook = book;
+                
+                document.getElementById('currentBookTitle').textContent = book.title;
+                document.getElementById('currentBookAuthor').textContent = `by ${book.author}`;
+                document.getElementById('currentBookGenre').textContent = book.genre;
+                document.getElementById('currentBookDescription').textContent = book.description;
+                
+                updateReadingProgress(currentReading.progress || 70);
+                
+                // Update book icon based on genre
+                const iconMap = {
+                    'Mystery': 'fas fa-search',
+                    'Romance': 'fas fa-heart',
+                    'Sci-Fi': 'fas fa-rocket',
+                    'Fantasy': 'fas fa-magic'
+                };
+                document.getElementById('currentBookIcon').className = iconMap[book.genre] || 'fas fa-book';
+            } else {
+                // Default book when server is offline
+                document.getElementById('currentBookTitle').textContent = 'The Silent Patient';
+                document.getElementById('currentBookAuthor').textContent = 'by Alex Michaelides';
+                document.getElementById('currentBookGenre').textContent = 'Psychological Thriller';
+                document.getElementById('currentBookDescription').textContent = 'A gripping psychological thriller about a woman\'s act of violence against her husband.';
+                document.getElementById('currentBookIcon').className = 'fas fa-search';
+                updateReadingProgress(70);
+            }
+        }
+
+        // Load recent orders from server
+        async function loadRecentOrders() {
+            const orders = await makeAPIRequest('/user/recent-orders');
+            const ordersList = document.getElementById('ordersList');
+            
+            if (orders && orders.length > 0) {
+                ordersList.innerHTML = '';
+                orders.forEach(order => {
+                    const orderElement = createOrderElement(order);
+                    ordersList.appendChild(orderElement);
+                });
+            } else {
+                // Default orders when server is offline
+                const defaultOrders = [
+                    {
+                        id: 'ORD-001',
+                        items: 'Mystery Solver\'s Kit',
+                        description: 'Classic Espresso + Dark Chocolate Tart + Book',
+                        time: 'Today, 2:30 PM',
+                        status: 'completed',
+                        price: 580
+                    },
+                    {
+                        id: 'ORD-002',
+                        items: 'Vanilla Dream Latte',
+                        description: 'Large size with extra foam',
+                        time: 'Yesterday, 4:15 PM',
+                        status: 'completed',
+                        price: 280
+                    },
+                    {
+                        id: 'ORD-003',
+                        items: 'Romance Reader\'s Delight',
+                        description: 'Vanilla Latte + Red Velvet + Romance Novel',
+                        time: 'Dec 13, 3:20 PM',
+                        status: 'completed',
+                        price: 650
+                    }
+                ];
+                
+                ordersList.innerHTML = '';
+                defaultOrders.forEach(order => {
+                    const orderElement = createOrderElement(order);
+                    ordersList.appendChild(orderElement);
+                });
+            }
+        }
+
+        // Create order element
+        function createOrderElement(order) {
+            const orderDiv = document.createElement('div');
+            orderDiv.className = 'order-item';
+            
+            const statusClass = order.status === 'completed' ? 'status-completed' : 
+                              order.status === 'pending' ? 'status-pending' : 'status-syncing';
+            
+            orderDiv.innerHTML = `
+                <div class="sync-indicator">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="order-icon">
+                    <i class="fas fa-coffee"></i>
+                </div>
+                <div class="order-details">
+                    <h4>${order.items}</h4>
+                    <p>${order.description}</p>
+                    <p style="font-size: 0.8rem; opacity: 0.8;">${order.time}</p>
+                </div>
+                <span class="order-status ${statusClass}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                <span class="order-price">৳${order.price}</span>
+            `;
+            
+            return orderDiv;
+        }
+
+        // Update reading progress
+        function updateReadingProgress(progress) {
+            const progressText = document.getElementById('progressText');
+            const progressLabel = document.getElementById('progressLabel');
+            const progressGoal = document.getElementById('progressGoal');
+            const progressCircle = document.getElementById('progressCircle');
+            
+            const totalPages = 350;
+            const currentPage = Math.round((progress / 100) * totalPages);
+            
+            progressText.textContent = `${progress}%`;
+            progressLabel.textContent = `${currentPage} of ${totalPages} pages`;
+            progressGoal.textContent = `3 days to finish goal`;
+            
+            // Update progress circle
+            const degrees = (progress / 100) * 360;
+            progressCircle.style.background = `conic-gradient(#654321 0deg, #654321 ${degrees}deg, rgba(101, 67, 33, 0.1) ${degrees}deg)`;
+        }
+
+        // Update user interface
+        function updateUserInterface() {
+            document.getElementById('navUserName').textContent = `Welcome, ${userData.name}`;
+            document.getElementById('sidebarUserName').textContent = userData.name;
+            document.getElementById('userLevel').textContent = userData.level;
+            document.getElementById('welcomeText').textContent = `Welcome back to your reading sanctuary, ${userData.name}!`;
+            
+            document.getElementById('booksRead').textContent = userData.booksRead;
+            document.getElementById('loyaltyPoints').textContent = userData.loyaltyPoints.toLocaleString();
+            document.getElementById('favoriteGenre').textContent = userData.favoriteGenre;
+        }
+
+        // Sync with server
+        async function syncWithServer() {
+            const syncBtn = document.querySelector('.sync-btn');
+            const originalText = syncBtn.innerHTML;
+            
+            syncBtn.innerHTML = '<span class="loading"></span> Syncing...';
+            syncBtn.disabled = true;
+            
+            // Add syncing class to orders
+            document.querySelectorAll('.order-item').forEach(order => {
+                order.classList.add('syncing');
+            });
+            
+            showNotification('Synchronizing with server...', 'info');
+            
+            // Simulate sync process
+            await Promise.all([
+                loadUserData(),
+                loadDashboardStats(),
+                loadCurrentReading(),
+                loadRecentOrders()
+            ]);
+            
+            setTimeout(() => {
+                // Remove syncing class
+                document.querySelectorAll('.order-item').forEach(order => {
+                    order.classList.remove('syncing');
+                });
+                
+                syncBtn.innerHTML = originalText;
+                syncBtn.disabled = false;
+                
+                if (isServerConnected) {
+                    showNotification('Successfully synchronized with server!', 'success');
+                } else {
+                    showNotification('Server offline - displaying cached data', 'warning');
+                }
+            }, 2000);
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('customerAuthenticated');
+                sessionStorage.removeItem('customerUser');
+                sessionStorage.removeItem('customerToken');
+                showNotification('Logging out...', 'info');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            }
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const bgColors = {
+                success: 'linear-gradient(135deg, #4CAF50, #45a049)',
+                error: 'linear-gradient(135deg, #f44336, #da190b)',
+                info: 'linear-gradient(135deg, #654321, #8B4513)',
+                warning: 'linear-gradient(135deg, #ff9800, #f57c00)'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 2rem;
+                background: ${bgColors[type]};
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 15px;
+                z-index: 5000;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                font-weight: 500;
+                max-width: 350px;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            const customerUser = localStorage.getItem('userName') || 'Customer';
+            userData.name = customerUser;
+            userData.email = `${customerUser}@crumbelore.com`;
+            
+            updateUserInterface();
+            updateConnectionStatus(false); // Start as disconnected
+            
+            // Load user data
+            loadUserData();
+            
+            // Auto-sync every 30 seconds
+            setInterval(() => {
+                if (isServerConnected) {
+                    syncWithServer();
+                }
+            }, 30000);
+        }
+
+        // Handle scroll animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.fade-in-up');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Reading progress functions
+        function updateProgress(progress) {
+            const progressCircle = document.getElementById('readingProgress');
+            const progressText = progressCircle.querySelector('.progress-text');
+            
+            // Update progress
+            progressText.textContent = `${progress}%`;
+            progressCircle.style.background = `conic-gradient(#654321 0deg, #654321 ${progress * 3.6}deg, rgba(101, 67, 33, 0.1) ${progress * 3.6}deg)`;
+            
+            showNotification(`Reading progress updated to ${progress}%`, 'success');
+        }
+
+        function addNote() {
+            const note = prompt('Add a note about this book:');
+            if (note) {
+                showNotification('Note added successfully!', 'success');
+            }
+        }
+
+        function markCompleted() {
+            if (confirm('Mark this book as completed?')) {
+                showNotification('Book marked as completed!', 'success');
+                // In a real app, this would update the database
+                setTimeout(() => {
+                    showSection('library');
+                }, 1500);
+            }
+        }
+
+        // Library functions
+        function addToLibrary() {
+            showNotification('Feature coming soon!', 'info');
+        }
+
+        // Order functions
+        function viewFullHistory() {
+            showNotification('Exporting order history...', 'info');
+        }
+
+        // Reservation functions
+        function makeReservation() {
+            showNotification('Opening reservation system...', 'info');
+        }
+
+        function modifyReservation(id) {
+            showNotification(`Modifying reservation: ${id}`, 'info');
+        }
+
+        function bookAgain(id) {
+            showNotification(`Re-booking: ${id}`, 'info');
+        }
+
+        // Preferences functions
+        function savePreferences() {
+            showNotification('Preferences saved successfully!', 'success');
+        }
+
+        // Settings functions
+        function updateProfile() {
+            showNotification('Profile updated successfully!', 'success');
+        }
+
+        function changePassword() {
+            showNotification('Password changed successfully!', 'success');
+        }
+
+        function updatePrivacy() {
+            showNotification('Privacy settings updated!', 'success');
+        }
+
+        function deleteAccount() {
+            if (confirm('Are you absolutely sure? This cannot be undone!')) {
+                showNotification('Account deletion requested', 'info');
+            }
+        }
+
+        function resetData() {
+            if (confirm('Reset all your data? This cannot be undone!')) {
+                showNotification('Data reset requested', 'info');
+            }
+        }
+
+        // Event listeners
+        window.addEventListener('load', function() {
+            if (checkCustomerAccess()) {
+                initDashboard();
+            }
+            handleScrollAnimations();
+        });
+
+        window.addEventListener('scroll', handleScrollAnimations);
+
+        // Initialize progress circle animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up progress circles
+            const progressCircles = document.querySelectorAll('.progress-circle');
+            progressCircles.forEach(circle => {
+                const progressText = circle.querySelector('.progress-text');
+                if (progressText) {
+                    const progress = parseInt(progressText.textContent);
+                    circle.style.background = `conic-gradient(#654321 0deg, #654321 ${progress * 3.6}deg, rgba(101, 67, 33, 0.1) ${progress * 3.6}deg)`;
+                }
+            });
+            
+            console.log('Crumbelore Customer Dashboard initialized successfully!');
+        });
+    </script>
+    <script src="js/auth.js"></script>
+    <script src="js/bookSystem.js"></script>
+</body>
+</html>

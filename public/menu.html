@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Crumbelore</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: #FEFDF8;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(254, 253, 248, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #654321;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #654321;
+        }
+
+        .nav-links a.active {
+            color: #654321;
+            font-weight: 600;
+        }
+
+        /* Hero Section */
+        .menu-hero {
+            height: 100vh;
+            background: linear-gradient(rgba(101, 67, 33, 0.4), rgba(139, 69, 19, 0.3)), 
+                        url('Images/menu.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .menu-hero-content {
+            max-width: 800px;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .menu-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 600;
+            color: #2b1702c0;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu-tagline {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 1.5rem;
+            color: #8B4513;
+            font-weight: 300;
+            font-style: italic;
+            margin-bottom: -13rem;
+        }
+        .tagline-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tagline-item i {
+            font-size: 1.8rem;
+            color: #654321;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: #FFFFFF;
+            padding: 2rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+            position: sticky;
+            top: 80px;
+            z-index: 100;
+        }
+
+        .filter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #E8D5C4;
+            background: transparent;
+            color: #8B4513;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #654321;
+            color: #FEFDF8;
+            border-color: #654321;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category-section {
+            margin-bottom: 5rem;
+        }
+
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            color: #654321;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .category-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #E8D5C4, #654321, #E8D5C4);
+            border-radius: 2px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-item {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 25px rgba(101, 67, 33, 0.08);
+            border: 1px solid rgba(101, 67, 33, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(101, 67, 33, 0.15);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #8B4513;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(101,67,33,0.1) 0%, transparent 60%);
+        }
+
+        .item-info {
+            position: relative;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .item-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #654321;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-price {
+            font-size: 1.3rem;
+            color: #8B4513;
+            font-weight: 600;
+        }
+
+        .item-description {
+            color: #8B4513;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .item-ingredients {
+            margin-bottom: 1.5rem;
+        }
+
+        .ingredients-title {
+            font-weight: 600;
+            color: #654321;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .ingredient-tag {
+            background: rgba(101, 67, 33, 0.1);
+            color: #654321;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #8B4513;
+        }
+
+        .calories {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .barista-tip {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #654321;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(101, 67, 33, 0.3);
+        }
+
+        .bestseller {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, #E8D5C4, #F5E6D3);
+            color: #654321;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(101, 67, 33, 0.2);
+            z-index: 10
+        }
+
+        .pairing-suggestion {
+            background: rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pairing-title {
+            font-weight: 600;
+            color: #654321;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pairing-text {
+            font-size: 0.85rem;
+            color: #8B4513;
+            line-height: 1.5;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: #FFFFFF;
+            box-shadow: -5px 0 25px rgba(101, 67, 33, 0.1);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .cart-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #654321;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #8B4513;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(101, 67, 33, 0.1);
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #654321;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #E8D5C4;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-toggle {
+            position: fixed;
+            right: 2rem;
+            bottom: 2rem;
+            background: #654321;
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(101, 67, 33, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1500;
+        }
+
+        .cart-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #E8D5C4;
+            color: #654321;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .menu-title {
+                font-size: 2.5rem;
+            }
+            
+            .menu-tagline {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        /* Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Coming Soon Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #FFFFFF;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(101, 67, 33, 0.3);
+        }
+
+        .modal h3 {
+            font-family: 'Playfair Display', serif;
+            color: #654321;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            color: #8B4513;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .modal-close {
+            background: linear-gradient(135deg, #654321, #8B4513);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">Crumbelore</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html" class="active">Menu</a></li>
+                <li><a href="event.html">Events</a></li>
+                <li><a href="library.html">Library</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                 <li><a href="checkout.html">Checkout</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="menu-hero">
+        <div class="menu-hero-content">
+            <h1 class="menu-title">Our Menu</h1>
+            <div class="menu-tagline">
+                <div class="tagline-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Read</span>
+                </div>
+                <div class="tagline-item">
+                    <i class="fas fa-coffee"></i>
+                    <span>Sip</span>
+                </div>
+                <div class="tagline-item">
+                    <i class="fas fa-cookie-bite"></i>
+                    <span>Indulge</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterMenu('all')">All Items</button>
+            <button class="filter-btn" onclick="filterMenu('coffee')">Coffee</button>
+            <button class="filter-btn" onclick="filterMenu('desserts')">Desserts</button>
+            <button class="filter-btn" onclick="filterMenu('books')">Book Specials</button>
+            <button class="filter-btn" onclick="filterMenu('pairings')">Literary Pairings</button>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="menu-section">
+        <!-- Coffee Section -->
+        <div class="category-section coffee-category fade-in-up">
+            <h2 class="category-title">Artisan Coffee</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="bestseller">Bestseller</div>
+                    <div class="item-image"style="background-image: url('Images/classic-espresso.jpg');">
+            
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Classic Espresso</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 5 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best with dark chocolate</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳180</div>
+                        </div>
+                        <p class="item-description">Rich, full-bodied espresso shot extracted from our signature blend of Ethiopian and Colombian beans.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Ethiopian Coffee Beans</span>
+                                <span class="ingredient-tag">Colombian Beans</span>
+                                <span class="ingredient-tag">Pure Water</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-book"></i>
+                                Perfect with Mystery Novels
+                            </div>
+                            <div class="pairing-text">The intensity matches thrilling plot twists</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Classic Espresso', 180)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image"style="background-image: url('Images/vanilla-latte.jpg');">
+                        <i class="fas fa-coffee" style="display: none;"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Vanilla Dream Latte</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 220 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Extra foam on request</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳280</div>
+                        </div>
+                        <p class="item-description">Smooth espresso with steamed milk and a touch of Madagascar vanilla, topped with silky microfoam.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Espresso</span>
+                                <span class="ingredient-tag">Steamed Milk</span>
+                                <span class="ingredient-tag">Madagascar Vanilla</span>
+                                <span class="ingredient-tag">Microfoam</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-heart"></i>
+                                Perfect with Romance Novels
+                            </div>
+                            <div class="pairing-text">Sweet and comforting like a love story</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Vanilla Dream Latte', 280)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/caramel-macchiato.jpg');">
+                        <i class="fas fa-mug-hot" style="display: none;"></i>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Caramel Macchiato</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 250 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Cross-hatch design</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳320</div>
+                        </div>
+                        <p class="item-description">Espresso marked with steamed milk and finished with our house-made caramel drizzle.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Espresso</span>
+                                <span class="ingredient-tag">Steamed Milk</span>
+                                <span class="ingredient-tag">House Caramel</span>
+                                <span class="ingredient-tag">Vanilla Syrup</span>
+                            </div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Caramel Macchiato', 320)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desserts Section -->
+        <div class="category-section desserts-category fade-in-up">
+            <h2 class="category-title">Sweet Creations</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="bestseller">Chef's Special</div>
+                    <div class="item-image" style="background-image: url('Images/red-velvet-cake.jpg');"> <i class="fas fa-mug-hot"style="display: none;"></i> </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Red Velvet Romance</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 380 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best served chilled</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳450</div>
+                        </div>
+                        <p class="item-description">Moist red velvet cake layered with cream cheese frosting and a hint of cocoa, garnished with fresh berries.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Red Velvet Sponge</span>
+                                <span class="ingredient-tag">Cream Cheese</span>
+                                <span class="ingredient-tag">Cocoa Powder</span>
+                                <span class="ingredient-tag">Fresh Berries</span>
+                                <span class="ingredient-tag">Butter</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-heart"></i>
+                                Perfect with Romance Novels
+                            </div>
+                            <div class="pairing-text">Rich and passionate like a great love story</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Red Velvet Romance', 450)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/chocolate-tart.jpg');"> 
+            
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Dark Chocolate Mystery Tart</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 320 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> 70% dark chocolate</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳420</div>
+                        </div>
+                        <p class="item-description">Decadent dark chocolate tart with silky ganache filling and a buttery almond crust.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Dark Chocolate (70%)</span>
+                                <span class="ingredient-tag">Heavy Cream</span>
+                                <span class="ingredient-tag">Almond Flour</span>
+                                <span class="ingredient-tag">Butter</span>
+                                <span class="ingredient-tag">Sugar</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-search"></i>
+                                Perfect with Mystery & Thriller
+                            </div>
+                            <div class="pairing-text">Dark and intense like a good mystery</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Dark Chocolate Mystery Tart', 420)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/cosmic-brownies.jpg');">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Cosmic Brownies</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 290 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Warm slightly before serving</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳350</div>
+                        </div>
+                        <p class="item-description">Fudgy brownies with chunks of dark chocolate and a sprinkle of edible gold stars.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Dark Chocolate</span>
+                                <span class="ingredient-tag">Cocoa Powder</span>
+                                <span class="ingredient-tag">Butter</span>
+                                <span class="ingredient-tag">Brown Sugar</span>
+                                <span class="ingredient-tag">Edible Gold Stars</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-rocket"></i>
+                                Perfect with Sci-Fi Novels
+                            </div>
+                            <div class="pairing-text">Out of this world taste for cosmic adventures</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Cosmic Brownies', 350)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Specials Section -->
+        <div class="category-section books-category fade-in-up">
+            <h2 class="category-title">Literary Specials</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="bestseller">Book Club Favorite</div>
+                    <div class="item-image"style="background-image: url('Images/philosopher-blend.jpg');">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Philosopher's Blend</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 180 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Medium roast perfection</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳300</div>
+                        </div>
+                        <p class="item-description">A thoughtful medium roast blend with notes of hazelnut and vanilla, designed for deep contemplation.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Medium Roast Beans</span>
+                                <span class="ingredient-tag">Hazelnut Notes</span>
+                                <span class="ingredient-tag">Vanilla Essence</span>
+                                <span class="ingredient-tag">Steamed Milk</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-brain"></i>
+                                Perfect with Philosophy & Non-Fiction
+                            </div>
+                            <div class="pairing-text">Stimulates deep thinking and reflection</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Philosopher\'s Blend', 300)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/fantasy-forest-latte.jpg');"> 
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Fantasy Forest Latte</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 260 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Emerald green foam art</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳380</div>
+                        </div>
+                        <p class="item-description">Matcha-infused latte with hints of mint and honey, topped with emerald-colored foam art.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Premium Matcha</span>
+                                <span class="ingredient-tag">Fresh Mint</span>
+                                <span class="ingredient-tag">Wildflower Honey</span>
+                                <span class="ingredient-tag">Oat Milk</span>
+                                <span class="ingredient-tag">Natural Green Coloring</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-dragon"></i>
+                                Perfect with Fantasy Novels
+                            </div>
+                            <div class="pairing-text">Magical taste for magical worlds</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Fantasy Forest Latte', 380)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/Poets-inspiration.jpg');">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Poet's Inspiration</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 200 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best sipped slowly</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳320</div>
+                        </div>
+                        <p class="item-description">Light roast with floral notes of jasmine and bergamot, served in our vintage teacup collection.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Ingredients</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Light Roast Coffee</span>
+                                <span class="ingredient-tag">Jasmine Essence</span>
+                                <span class="ingredient-tag">Bergamot Oil</span>
+                                <span class="ingredient-tag">Rose Petals</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-pen-fancy"></i>
+                                Perfect with Poetry & Literature
+                            </div>
+                            <div class="pairing-text">Delicate flavors for beautiful words</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Poet\'s Inspiration', 320)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Literary Pairings Section -->
+        <div class="category-section pairings-category fade-in-up">
+            <h2 class="category-title">Literary Pairing Combos</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="bestseller">Most Popular</div>
+                    <div class="item-image" style="background-image:url('Images/romance-delight.jpg');">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Romance Reader's Delight</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 600 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Perfect for cozy reading</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳650</div>
+                        </div>
+                        <p class="item-description">Vanilla Dream Latte + Red Velvet Romance + A curated romance novel from our collection.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Includes</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Vanilla Dream Latte</span>
+                                <span class="ingredient-tag">Red Velvet Romance Cake</span>
+                                <span class="ingredient-tag">Romance Novel</span>
+                                <span class="ingredient-tag">Complimentary Bookmark</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-book-heart"></i>
+                                Complete Romance Experience
+                            </div>
+                            <div class="pairing-text">Sweet treats for sweet love stories - save ৳100!</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Romance Reader\'s Delight', 650)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image"style="background-image: url('Images/mystery-solver-kit.jpg');"> 
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Mystery Solver's Kit</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 500 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Intense flavors for intense plots</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳580</div>
+                        </div>
+                        <p class="item-description">Classic Espresso + Dark Chocolate Mystery Tart + A gripping mystery novel to solve.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Includes</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Classic Espresso</span>
+                                <span class="ingredient-tag">Dark Chocolate Tart</span>
+                                <span class="ingredient-tag">Mystery Novel</span>
+                                <span class="ingredient-tag">Detective's Notebook</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-magnifying-glass"></i>
+                                Perfect Detective Experience
+                            </div>
+                            <div class="pairing-text">Dark, intense flavors for thrilling mysteries - save ৳80!</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Mystery Solver\'s Kit', 580)">Add to Cart</button>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="item-image" style="background-image: url('Images/scifi-explorer-pack.jpg');"> 
+                    </div>
+                    <div class="item-info">
+                        <div class="item-header">
+                            <div>
+                                <h3 class="item-name">Sci-Fi Explorer's Pack</h3>
+                                <div class="item-details">
+                                    <span class="calories"><i class="fas fa-fire"></i> 550 cal</span>
+                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Futuristic presentation</span>
+                                </div>
+                            </div>
+                            <div class="item-price">৳620</div>
+                        </div>
+                        <p class="item-description">Fantasy Forest Latte + Cosmic Brownies + A mind-bending sci-fi adventure.</p>
+                        <div class="item-ingredients">
+                            <div class="ingredients-title">Includes</div>
+                            <div class="ingredients-list">
+                                <span class="ingredient-tag">Fantasy Forest Latte</span>
+                                <span class="ingredient-tag">Cosmic Brownies</span>
+                                <span class="ingredient-tag">Sci-Fi Novel</span>
+                                <span class="ingredient-tag">Galaxy Bookmark</span>
+                            </div>
+                        </div>
+                        <div class="pairing-suggestion">
+                            <div class="pairing-title">
+                                <i class="fas fa-space-shuttle"></i>
+                                Intergalactic Reading Journey
+                            </div>
+                            <div class="pairing-text">Out-of-this-world combination - save ৳110!</div>
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart('Sci-Fi Explorer\'s Pack', 620)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3 class="cart-title">Your Order</h3>
+            <button class="cart-close" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p style="color: #8B4513; text-align: center; margin: 2rem 0;">Your cart is empty</p>
+        </div>
+        <div class="cart-total" id="cartTotal">Total: ৳0</div>
+        <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Cart Toggle Button -->
+    <button class="cart-toggle" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <script>
+
+         // Simple working cart system
+        class SimpleCart {
+            constructor() {
+                this.items = this.loadCart();
+                this.updateDisplay();
+            }
+
+            loadCart() {
+                try {
+                    const saved = localStorage.getItem('cart');
+                    return saved ? JSON.parse(saved) : [];
+                } catch (error) {
+                    console.error('Error loading cart:', error);
+                    return [];
+                }
+            }
+
+            saveCart() {
+                try {
+                    localStorage.setItem('cart', JSON.stringify(this.items));
+                    this.updateDisplay();
+                } catch (error) {
+                    console.error('Error saving cart:', error);
+                }
+            }
+
+            addItem(name, price) {
+                const existingItem = this.items.find(item => item.name === name);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.items.push({
+                        id: Date.now(),
+                        name: name,
+                        price: parseFloat(price),
+                        quantity: 1
+                    });
+                }
+                
+                this.saveCart();
+                this.showNotification(`${name} added to cart!`);
+            }
+
+            removeItem(itemId) {
+                this.items = this.items.filter(item => item.id !== itemId);
+                this.saveCart();
+            }
+
+            getTotal() {
+                return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            }
+
+            getCount() {
+                return this.items.reduce((sum, item) => sum + item.quantity, 0);
+            }
+
+            updateDisplay() {
+                // Update cart count
+                const countElements = document.querySelectorAll('#cartCount, .cart-count');
+                countElements.forEach(el => {
+                    if (el) el.textContent = this.getCount();
+                });
+
+                // Update cart total
+                const totalElements = document.querySelectorAll('#cartTotal, .cart-total');
+                totalElements.forEach(el => {
+                    if (el) el.textContent = `৳${this.getTotal()}`;
+                });
+
+                // Update cart items display
+                const cartItemsContainer = document.getElementById('cartItems');
+                if (cartItemsContainer) {
+                    if (this.items.length === 0) {
+                        cartItemsContainer.innerHTML = '<p style="color: #8B4513; text-align: center; margin: 2rem 0;">Your cart is empty</p>';
+                    } else {
+                        cartItemsContainer.innerHTML = this.items.map(item => `
+                            <div class="cart-item">
+                                <div>
+                                    <strong style="color: #654321;">${item.name}</strong><br>
+                                    <small style="color: #8B4513;">৳${item.price} x ${item.quantity}</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: #654321; font-weight: 600;">৳${item.price * item.quantity}</div>
+                                    <button onclick="cart.removeItem(${item.id})" style="background: none; border: none; color: #8B4513; cursor: pointer; font-size: 0.8rem;">Remove</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+
+            showNotification(message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 2rem;
+                    background: #654321;
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    z-index: 3000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+        }
+         // Initialize cart
+        const cart = new SimpleCart();
+
+        // Cart functionality
+         function addToCart(itemName, price) {
+            cart.addItem(itemName, price);
+        }
+
+        function toggleCart() {
+            const cartSidebar = document.getElementById('cartSidebar');
+            if (cartSidebar) {
+            cartSidebar.classList.toggle('open');
+            cart.updateDisplay();}
+        }
+
+        function checkout() {
+            if (cart.items.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }        
+        localStorage.setItem('cart', JSON.stringify(cart.items));
+        localStorage.setItem('checkoutCart', JSON.stringify(cart.items));
+            window.location.href = 'checkout.html';
+        }
+
+        
+        // Filter functionality
+        function filterMenu(category) {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const categories = document.querySelectorAll('.category-section');
+            
+            // Update active button
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide categories
+            categories.forEach(cat => {
+                if (category === 'all') {
+                    cat.style.display = 'block';
+                } else if (cat.classList.contains(category + '-category')) {
+                    cat.style.display = 'block';
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+        }
+
+        // Scroll animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('.fade-in-up');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 100;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Initialize
+        window.addEventListener('scroll', handleScrollAnimations);
+        window.addEventListener('load', handleScrollAnimations);
+
+        // Close cart when clicking outside
+        document.addEventListener('click', function(event) {
+            const cartSidebar = document.getElementById('cartSidebar');
+            const cartToggle = document.querySelector('.cart-toggle');
+            
+            if (!cartSidebar.contains(event.target) && !cartToggle.contains(event.target)) {
+                cartSidebar.classList.remove('open');
+            }
+        });
+
+        // Add CSS animation for notification
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Handle navigation properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle navigation clicks
+            document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+    
+              // Handle other navigation normally
+            if (href.includes('index.html#')) {
+                // Let anchor links work normally
+                return;
+            }
+        });
+    });
+            // Initialize animations
+            handleScrollAnimations();
+        });
+
+        // Add hover effects for better interactivity
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        console.log('Crumbelore Menu Page initialized successfully!');
+    </script>
+    <script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/bookSystem.js"></script>
+</body>
+</html>

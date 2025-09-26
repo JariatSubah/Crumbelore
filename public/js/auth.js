@@ -1,8 +1,11 @@
 // auth.js - Centralized authentication system
 class AuthSystem {
     constructor() {
-        this.baseURL = window.location.hostname === 'localhost' ? 
-            'http://localhost:3000' : 'https://your-server.com';
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        this.baseURL = isLocal ? 
+            'http://127.0.0.1:3000' : 'https://your-server.com';
+            
         this.isOfflineMode = false;
         this.init();
     }

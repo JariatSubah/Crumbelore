@@ -1,241 +1,283 @@
-// server.js - Basic Express server for your backend
+// server.js - Fixed version with proper error handling
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8080'],
+    credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.static(path.join(__dirname)));
 
-// Simple file-based storage (replace with database later)
-const DATA_DIR = './data';
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
-const BOOKS_FILE = path.join(DATA_DIR, 'books.json');
-const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
-const RESERVATIONS_FILE = path.join(DATA_DIR, 'reservations.json');
+// Data directory setup
+const DATA_DIR = path.join(__dirname, 'data');
 
-// Initialize data directory
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
-}
-
-// Helper functions
-function readJsonFile(filename) {
+// Initialize data directory and files
+async function initializeStorage() {
     try {
-        if (fs.existsSync(filename)) {
-            return JSON.parse(fs.readFileSync(filename, 'utf8'));
+        await fs.mkdir(DATA_DIR, { recursive: true });
+        
+        const files = ['users.json', 'books.json', 'orders.json', 'reservations.json'];
+        for (const file of files) {
+            const filePath = path.join(DATA_DIR, file);
+            try {
+                await fs.access(filePath);
+            } catch {
+                await fs.writeFile(filePath, '[]');
+                console.log(`Created ${file}`);
+            }
         }
-        return [];
     } catch (error) {
-        console.error(`Error reading ${filename}:`, error);
-        return [];
+        console.error('Storage initialization failed:', error);
+        process.exit(1);
     }
 }
 
-function writeJsonFile(filename, data) {
-    try {
-        fs.writeFileSync(filename, JSON.stringify(data, null, 2));
-        return true;
-    } catch (error) {
-        console.error(`Error writing ${filename}:`, error);
-        return false;
+// Safe file operations with retry
+async function readJsonFile(filename, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const filePath = path.join(DATA_DIR, filename);
+            const data = await fs.readFile(filePath, 'utf8');
+            return JSON.parse(data || '[]');
+        } catch (error) {
+            if (i === retries - 1) {
+                console.error(`Failed to read ${filename}:`, error);
+                return [];
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 }
+
+async function writeJsonFile(filename, data, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const filePath = path.join(DATA_DIR, filename);
+            const backup = filePath + '.backup';
+            
+            // Create backup
+            try {
+                await fs.copyFile(filePath, backup);
+            } catch (error) {
+                // File might not exist yet
+            }
+            
+            await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+            return true;
+        } catch (error) {
+            if (i === retries - 1) {
+                console.error(`Failed to write ${filename}:`, error);
+                return false;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+}
+
+// Validation middleware
+const validateRequired = (fields) => (req, res, next) => {
+    const missing = fields.filter(field => !req.body[field]);
+    if (missing.length > 0) {
+        return res.status(400).json({ 
+            message: `Missing required fields: ${missing.join(', ')}` 
+        });
+    }
+    next();
+};
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Authentication endpoints
-app.post('/api/auth/login', (req, res) => {
-    const { email, password, userType } = req.body;
-    
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password required' });
-    }
-
-    // Simple demo authentication - replace with proper auth
-    const users = readJsonFile(USERS_FILE);
-    let user = users.find(u => u.email === email);
-    
-    if (!user) {
-        // Create new user for demo
-        user = {
-            id: Date.now(),
-            email,
-            name: email.split('@')[0],
-            type: userType || 'customer',
-            createdAt: new Date().toISOString()
-        };
-        users.push(user);
-        writeJsonFile(USERS_FILE, users);
-    }
-
-    // Generate simple token (use JWT in production)
-    const token = Buffer.from(`${user.id}-${Date.now()}`).toString('base64');
-    
-    res.json({
-        token,
-        user: { id: user.id, email: user.email, name: user.name, type: user.type }
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
     });
 });
 
+// Authentication endpoints
+app.post('/api/auth/login', validateRequired(['email', 'password']), async (req, res) => {
+    try {
+        const { email, password, userType } = req.body;
+        
+        let users = await readJsonFile('users.json');
+        let user = users.find(u => u.email === email);
+        
+        if (!user) {
+            // Create new user for demo
+            user = {
+                id: Date.now(),
+                email,
+                name: email.split('@')[0],
+                type: userType || 'customer',
+                createdAt: new Date().toISOString()
+            };
+            users.push(user);
+            await writeJsonFile('users.json', users);
+        }
+
+        // Generate token
+        const token = Buffer.from(`${user.id}-${Date.now()}`).toString('base64');
+        
+        res.json({
+            token,
+            user: { id: user.id, email: user.email, name: user.name, type: user.type }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // Books endpoints
-app.get('/api/books', (req, res) => {
-    const books = readJsonFile(BOOKS_FILE);
-    res.json(books);
-});
-
-app.post('/api/books', (req, res) => {
-    const books = readJsonFile(BOOKS_FILE);
-    const newBook = {
-        id: req.body.id || `book-${Date.now()}`,
-        ...req.body,
-        createdAt: new Date().toISOString()
-    };
-    
-    books.push(newBook);
-    if (writeJsonFile(BOOKS_FILE, books)) {
-        res.status(201).json(newBook);
-    } else {
-        res.status(500).json({ message: 'Failed to save book' });
+app.get('/api/books', async (req, res) => {
+    try {
+        const books = await readJsonFile('books.json');
+        res.json(books);
+    } catch (error) {
+        console.error('Get books error:', error);
+        res.status(500).json({ message: 'Failed to retrieve books' });
     }
 });
 
-app.get('/api/books/:id', (req, res) => {
-    const books = readJsonFile(BOOKS_FILE);
-    const book = books.find(b => b.id === req.params.id);
-    
-    if (book) {
-        res.json(book);
-    } else {
-        res.status(404).json({ message: 'Book not found' });
+app.post('/api/books', validateRequired(['title', 'author']), async (req, res) => {
+    try {
+        const books = await readJsonFile('books.json');
+        const newBook = {
+            id: req.body.id || `book-${Date.now()}`,
+            ...req.body,
+            createdAt: new Date().toISOString()
+        };
+        
+        books.push(newBook);
+        const success = await writeJsonFile('books.json', books);
+        
+        if (success) {
+            res.status(201).json(newBook);
+        } else {
+            res.status(500).json({ message: 'Failed to save book' });
+        }
+    } catch (error) {
+        console.error('Add book error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-app.post('/api/books/sync', (req, res) => {
-    const { books } = req.body;
-    if (writeJsonFile(BOOKS_FILE, books)) {
-        res.json({ message: 'Books synced successfully' });
-    } else {
-        res.status(500).json({ message: 'Failed to sync books' });
+app.post('/api/books/sync', async (req, res) => {
+    try {
+        const { books } = req.body;
+        if (!Array.isArray(books)) {
+            return res.status(400).json({ message: 'Books must be an array' });
+        }
+        
+        const success = await writeJsonFile('books.json', books);
+        if (success) {
+            res.json({ message: 'Books synced successfully' });
+        } else {
+            res.status(500).json({ message: 'Failed to sync books' });
+        }
+    } catch (error) {
+        console.error('Sync books error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
 // Orders endpoints
-app.post('/api/orders', (req, res) => {
-    const orders = readJsonFile(ORDERS_FILE);
-    const newOrder = {
-        ...req.body,
-        id: req.body.id || `ORD-${Date.now()}`,
-        createdAt: new Date().toISOString()
-    };
-    
-    orders.push(newOrder);
-    if (writeJsonFile(ORDERS_FILE, orders)) {
-        res.status(201).json({ order: newOrder });
-    } else {
-        res.status(500).json({ message: 'Failed to save order' });
+app.post('/api/orders', validateRequired(['items', 'total']), async (req, res) => {
+    try {
+        const orders = await readJsonFile('orders.json');
+        const newOrder = {
+            ...req.body,
+            id: req.body.id || `ORD-${Date.now()}`,
+            createdAt: new Date().toISOString()
+        };
+        
+        orders.push(newOrder);
+        const success = await writeJsonFile('orders.json', orders);
+        
+        if (success) {
+            res.status(201).json({ order: newOrder });
+        } else {
+            res.status(500).json({ message: 'Failed to save order' });
+        }
+    } catch (error) {
+        console.error('Create order error:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-app.get('/api/orders', (req, res) => {
-    const orders = readJsonFile(ORDERS_FILE);
-    res.json(orders);
-});
-
-// Reservations endpoints
-app.post('/api/reservations', (req, res) => {
-    const reservations = readJsonFile(RESERVATIONS_FILE);
-    const newReservation = {
-        ...req.body,
-        id: req.body.id || `RES-${Date.now()}`,
-        createdAt: new Date().toISOString()
-    };
-    
-    reservations.push(newReservation);
-    if (writeJsonFile(RESERVATIONS_FILE, reservations)) {
-        res.status(201).json(newReservation);
-    } else {
-        res.status(500).json({ message: 'Failed to save reservation' });
-    }
-});
-
-app.post('/api/reservations/sync', (req, res) => {
-    const { reservations } = req.body;
-    if (writeJsonFile(RESERVATIONS_FILE, reservations)) {
-        res.json({ message: 'Reservations synced successfully' });
-    } else {
-        res.status(500).json({ message: 'Failed to sync reservations' });
+app.get('/api/orders', async (req, res) => {
+    try {
+        const orders = await readJsonFile('orders.json');
+        res.json(orders);
+    } catch (error) {
+        console.error('Get orders error:', error);
+        res.status(500).json({ message: 'Failed to retrieve orders' });
     }
 });
 
 // Dashboard stats
-app.get('/api/dashboard/stats', (req, res) => {
-    const orders = readJsonFile(ORDERS_FILE);
-    const books = readJsonFile(BOOKS_FILE);
-    const users = readJsonFile(USERS_FILE);
-    
-    const todayOrders = orders.filter(o => {
-        const orderDate = new Date(o.createdAt);
-        const today = new Date();
-        return orderDate.toDateString() === today.toDateString();
-    });
-    
-    const todaySales = todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-    
-    res.json({
-        totalOrders: orders.length,
-        todayOrders: todayOrders.length,
-        todaySales: todaySales,
-        totalBooks: books.length,
-        totalUsers: users.length
-    });
+app.get('/api/dashboard/stats', async (req, res) => {
+    try {
+        const [orders, books, users] = await Promise.all([
+            readJsonFile('orders.json'),
+            readJsonFile('books.json'),
+            readJsonFile('users.json')
+        ]);
+        
+        const todayOrders = orders.filter(o => {
+            const orderDate = new Date(o.createdAt);
+            const today = new Date();
+            return orderDate.toDateString() === today.toDateString();
+        });
+        
+        const todaySales = todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+        
+        res.json({
+            totalOrders: orders.length,
+            todayOrders: todayOrders.length,
+            todaySales: todaySales,
+            totalBooks: books.length,
+            totalUsers: users.length
+        });
+    } catch (error) {
+        console.error('Dashboard stats error:', error);
+        res.status(500).json({ message: 'Failed to retrieve stats' });
+    }
 });
 
-// Menu endpoints
-app.get('/api/menu', (req, res) => {
-    // Return default menu items for now
-    const defaultMenu = [
-        {
-            id: 'vanilla-latte',
-            name: 'Vanilla Dream Latte',
-            category: 'Coffee',
-            price: 280,
-            description: 'Smooth espresso with steamed milk and Madagascar vanilla'
-        },
-        {
-            id: 'mystery-kit',
-            name: 'Mystery Solver\'s Kit',
-            category: 'Literary Pairings',
-            price: 580,
-            description: 'Classic Espresso + Dark Chocolate Tart + Mystery Novel'
-        }
-    ];
-    res.json(defaultMenu);
-});
-
-app.post('/api/menu', (req, res) => {
-    // Add menu item logic here
-    res.status(201).json({ message: 'Menu item added successfully' });
-});
-
-// Error handling
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log('Data directory:', DATA_DIR);
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ message: 'Endpoint not found' });
 });
+
+// Start server
+async function startServer() {
+    try {
+        await initializeStorage();
+        app.listen(PORT, () => {
+            console.log(`✅ Crumbelore Server running on http://localhost:${PORT}`);
+            console.log(`📁 Data directory: ${DATA_DIR}`);
+            console.log(`🔄 Server ready for API requests`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+startServer();
 
 module.exports = app;

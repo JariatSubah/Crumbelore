@@ -6,6 +6,10 @@
     <title>My Dashboard - Crumbelore</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+     <script src="js/bookSystem.js"></script>
+     <script src="js/auth.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -1467,80 +1471,76 @@
 
         // Check customer authentication for localhost
         function checkCustomerAccess() {
-            // Check if running on localhost
-            const isLocalhost = window.location.hostname === 'localhost' || 
-                              window.location.hostname === '127.0.0.1' || 
-                              window.location.hostname === '';
-
-            if (!isLocalhost) {
-                showNotification('This dashboard requires localhost server', 'error');
-                return false;
-            }
+       // First check if user is already authenticated via auth system
+    if (window.authSystem && window.authSystem.isAuthenticated()) {
+        const user = window.authSystem.getCurrentUser();
+        userData.name = user.name;
+        userData.email = user.email;
+        return true;
+    }
+    
+    // Check localStorage from index page login
+    const userType = localStorage.getItem('userType');
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (userType === 'customer' && userEmail) {
+        userData.name = localStorage.getItem('userName') || userEmail.split('@')[0];
+        userData.email = userEmail;
+        return true;
+    }
+    
+    // If no valid session, redirect to login
+    showNotification('Please log in to access your dashboard', 'warning');
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 2000);
+    return false;
+}
 
             // Check for customer session
             const customerSession = sessionStorage.getItem('customerAuthenticated');
             const customerUser = sessionStorage.getItem('customerUser');
-
-            if (!customerSession || !customerUser) {
-                // Redirect to login
-                promptCustomerLogin();
-                return false;
-            }
-
-            return true;
-        }
-
-        // Customer login prompt for localhost
-        function promptCustomerLogin() {
-            const username = prompt('Customer Username:');
-            const password = prompt('Customer Password:');
-
-            if (username === USER_CREDENTIALS.username && password === USER_CREDENTIALS.password) {
-                sessionStorage.setItem('customerAuthenticated', 'true');
-                sessionStorage.setItem('customerUser', username);
-                userData.name = username;
-                userData.email = `${username}@localhost`;
-                showNotification('Customer login successful', 'success');
-                initDashboard();
-            } else {
-                showNotification('Invalid customer credentials', 'error');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            }
-        }
+        
 
         // API Functions for localhost server
-        async function makeAPIRequest(endpoint, method = 'GET', data = null) {
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${sessionStorage.getItem('customerToken') || 'customer-token'}`
-                    }
-                };
+        async function makeAPIRequest(endpoint, method = 'GET', data = null, timeout = 5000) {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('customerToken') || 'customer-token'}`
+            },
+            signal: controller.signal
+        };
 
-                if (data) {
-                    options.body = JSON.stringify(data);
-                }
-
-                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                isServerConnected = true;
-                updateConnectionStatus(true);
-                return await response.json();
-            } catch (error) {
-                console.error('API Request failed:', error);
-                isServerConnected = false;
-                updateConnectionStatus(false);
-                return null;
-            }
+        if (data) {
+            options.body = JSON.stringify(data);
         }
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        isServerConnected = true;
+        updateConnectionStatus(true);
+        return await response.json();
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Request timed out');
+        } else {
+            console.error('API Request failed:', error);
+        }
+        isServerConnected = false;
+        updateConnectionStatus(false);
+        return null;
+    }}
 
         // Update connection status
         function updateConnectionStatus(connected) {
@@ -1553,6 +1553,20 @@
                 statusElement.innerHTML = '<i class="fas fa-wifi"></i> Server offline - using cached data';
             }
         }
+
+        // Enhanced connection status with retry logic
+
+        function attemptServerConnection() {
+    return makeAPIRequest('/health')
+        .then(result => {
+            if (result) {
+                showNotification('Connected to server', 'success', 2000);
+                return true;
+            }
+            return false;
+        })
+        .catch(() => false);
+}
 
         // Navigation between sections
         function showSection(sectionId) {
@@ -1581,22 +1595,45 @@
 
         // Load user data from server
         async function loadUserData() {
-            showNotification('Loading your data from server...', 'info');
-            
+    const connected = await attemptServerConnection();
+    
+    if (connected) {
+        try {
+            // Try to load from server
             const serverData = await makeAPIRequest('/user/profile');
             if (serverData) {
                 userData = { ...userData, ...serverData };
-                showNotification('Data synchronized with server', 'success');
+                showNotification('Data synchronized with server', 'success', 2000);
             } else {
-                // Use default/cached data
-                userData.booksRead = 47;
-                userData.loyaltyPoints = 2340;
-                userData.favoriteGenre = 'Mystery';
-                showNotification('Using cached data - server offline', 'warning');
+                // Server didn't return data, use cached/default
+                setDefaultUserData();
             }
-            
-            updateUserInterface();
+        } catch (error) {
+            console.log('Server data load failed, using defaults:', error);
+            setDefaultUserData();
         }
+    } else {
+        // Server offline, use cached/default data
+        setDefaultUserData();
+        showNotification('Using cached data - server offline', 'warning', 3000);
+    }
+    
+    updateUserInterface();
+}
+
+// Add this helper function to set default user data
+function setDefaultUserData() {
+    // Get stored data or use defaults
+    userData.booksRead = parseInt(localStorage.getItem('userBooksRead')) || 47;
+    userData.loyaltyPoints = parseInt(localStorage.getItem('userLoyaltyPoints')) || 2340;
+    userData.favoriteGenre = localStorage.getItem('userFavoriteGenre') || 'Mystery';
+    
+    // Store the defaults for next time
+    localStorage.setItem('userBooksRead', userData.booksRead.toString());
+    localStorage.setItem('userLoyaltyPoints', userData.loyaltyPoints.toString());
+    localStorage.setItem('userFavoriteGenre', userData.favoriteGenre);
+}
+
 
         // Load dashboard statistics
         async function loadDashboardStats() {
@@ -1765,44 +1802,21 @@
         }
 
         // Sync with server
-        async function syncWithServer() {
-            const syncBtn = document.querySelector('.sync-btn');
-            const originalText = syncBtn.innerHTML;
-            
-            syncBtn.innerHTML = '<span class="loading"></span> Syncing...';
-            syncBtn.disabled = true;
-            
-            // Add syncing class to orders
-            document.querySelectorAll('.order-item').forEach(order => {
-                order.classList.add('syncing');
-            });
-            
-            showNotification('Synchronizing with server...', 'info');
-            
-            // Simulate sync process
-            await Promise.all([
-                loadUserData(),
-                loadDashboardStats(),
-                loadCurrentReading(),
-                loadRecentOrders()
-            ]);
-            
-            setTimeout(() => {
-                // Remove syncing class
-                document.querySelectorAll('.order-item').forEach(order => {
-                    order.classList.remove('syncing');
-                });
-                
-                syncBtn.innerHTML = originalText;
-                syncBtn.disabled = false;
-                
-                if (isServerConnected) {
-                    showNotification('Successfully synchronized with server!', 'success');
-                } else {
-                    showNotification('Server offline - displaying cached data', 'warning');
-                }
-            }, 2000);
-        }
+        setTimeout(() => {
+    // Remove syncing class
+    document.querySelectorAll('.order-item').forEach(order => {
+        order.classList.remove('syncing');
+    });
+    
+    syncBtn.innerHTML = originalText;
+    syncBtn.disabled = false;
+    
+    if (isServerConnected) {
+        showNotification('Successfully synchronized with server!', 'success');
+    } else {
+        showNotification('Server unavailable - displaying cached data', 'warning');
+    }
+}, 1500); // Reduced from 2000 to 1500
 
         // Logout function
         function logout() {
@@ -1817,68 +1831,106 @@
             }
         }
 
-        // Show notification function
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            const bgColors = {
-                success: 'linear-gradient(135deg, #4CAF50, #45a049)',
-                error: 'linear-gradient(135deg, #f44336, #da190b)',
-                info: 'linear-gradient(135deg, #654321, #8B4513)',
-                warning: 'linear-gradient(135deg, #ff9800, #f57c00)'
-            };
-            
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 2rem;
-                background: ${bgColors[type]};
-                color: white;
-                padding: 1rem 2rem;
-                border-radius: 15px;
-                z-index: 5000;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                transform: translateX(100%);
-                transition: all 0.3s ease;
-                font-weight: 500;
-                max-width: 350px;
-            `;
-            
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 4000);
+        // Enhanced notification system with duration control
+function showNotification(message, type = 'info', duration = 4000) {
+    const notification = document.createElement('div');
+    const bgColors = {
+        success: 'linear-gradient(135deg, #4CAF50, #45a049)',
+        error: 'linear-gradient(135deg, #f44336, #da190b)',
+        info: 'linear-gradient(135deg, #654321, #8B4513)',
+        warning: 'linear-gradient(135deg, #ff9800, #f57c00)'
+    };
+    
+    const icons = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle',
+        warning: 'fas fa-exclamation-circle'
+    };
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 2rem;
+        background: ${bgColors[type]};
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 15px;
+        z-index: 5000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        font-weight: 500;
+        max-width: 350px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-size: 0.95rem;
+    `;
+    
+    notification.innerHTML = `
+        <i class="${icons[type]}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Auto remove based on duration
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, duration);
+}
+
+// Add retry mechanism for failed connections
+async function retryServerConnection(maxRetries = 3, delay = 2000) {
+    for (let i = 0; i < maxRetries; i++) {
+        const connected = await attemptServerConnection();
+        if (connected) {
+            return true;
         }
+        
+        if (i < maxRetries - 1) {
+            showNotification(`Retry ${i + 1}/${maxRetries} - Reconnecting...`, 'info', 2000);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+    }
+    
+    showNotification('Server unavailable - using offline mode', 'warning', 5000);
+    return false;
+}
 
         // Initialize dashboard
         function initDashboard() {
-            const customerUser = localStorage.getItem('userName') || 'Customer';
-            userData.name = customerUser;
-            userData.email = `${customerUser}@crumbelore.com`;
-            
-            updateUserInterface();
-            updateConnectionStatus(false); // Start as disconnected
-            
-            // Load user data
-            loadUserData();
-            
-            // Auto-sync every 30 seconds
-            setInterval(() => {
-                if (isServerConnected) {
-                    syncWithServer();
-                }
-            }, 30000);
+    // Update UI with stored data immediately
+    const userName = localStorage.getItem('userName') || 'Customer';
+    userData.name = userName;
+    userData.email = localStorage.getItem('userEmail') || `${userName}@crumbelore.com`;
+    
+    updateUserInterface();
+    updateConnectionStatus(false); // Start as disconnected
+    
+    showNotification('Loading dashboard...', 'info', 2000);
+    
+    // Try to load data from server
+    loadUserData();
+    
+    // Auto-sync every 2 minutes if connected
+    setInterval(() => {
+        if (isServerConnected && !document.hidden) {
+            syncWithServer();
         }
+    }, 120000);
+}
 
         // Handle scroll animations
         function handleScrollAnimations() {
@@ -1978,13 +2030,11 @@
 
         // Event listeners
         window.addEventListener('load', function() {
-            if (checkCustomerAccess()) {
-                initDashboard();
-            }
-            handleScrollAnimations();
-        });
-
-        window.addEventListener('scroll', handleScrollAnimations);
+    if (checkCustomerAccess()) {
+        initDashboard();
+    }
+    handleScrollAnimations();
+});
 
         // Initialize progress circle animation
         document.addEventListener('DOMContentLoaded', function() {
@@ -2000,8 +2050,75 @@
             
             console.log('Crumbelore Customer Dashboard initialized successfully!');
         });
+        // Enhanced connection status with retry logic
+async function attemptServerConnection() {
+    const connectionStatus = document.getElementById('connectionStatus');
+    
+    if (connectionStatus) {
+        connectionStatus.className = 'connection-status';
+        connectionStatus.innerHTML = '<i class="fas fa-wifi"></i> Checking connection...';
+    }
+    
+    try {
+        // Try the correct server URL
+        const response = await fetch('http://localhost:3000/health', {
+            method: 'GET',
+            timeout: 5000
+        });
+        
+        if (response.ok) {
+            isServerConnected = true;
+            if (connectionStatus) {
+                connectionStatus.className = 'connection-status online';
+                connectionStatus.innerHTML = '<i class="fas fa-wifi"></i> Connected to localhost:3000';
+            }
+            showNotification('Connected to server', 'success', 2000);
+            return true;
+        }
+    } catch (error) {
+        console.log('Server connection failed:', error);
+    }
+    
+    // If connection failed
+    isServerConnected = false;
+    if (connectionStatus) {
+        connectionStatus.className = 'connection-status offline';
+        connectionStatus.innerHTML = '<i class="fas fa-wifi-slash"></i> Server offline - using cached data';
+    }
+    return false;
+}
+
+// Update the initDashboard function to properly check connection
+function initDashboard() {
+    // Update UI with stored data immediately
+    const userName = localStorage.getItem('userName') || 'Customer';
+    userData.name = userName;
+    userData.email = localStorage.getItem('userEmail') || `${userName}@crumbelore.com`;
+    
+    updateUserInterface();
+    
+    showNotification('Loading dashboard...', 'info', 2000);
+    
+    // Check server connection first
+    attemptServerConnection().then(connected => {
+        if (connected) {
+            loadUserData();
+        } else {
+            // Use cached data
+            userData.booksRead = parseInt(localStorage.getItem('booksRead')) || 47;
+            userData.loyaltyPoints = parseInt(localStorage.getItem('loyaltyPoints')) || 2340;
+            userData.favoriteGenre = localStorage.getItem('favoriteGenre') || 'Mystery';
+            updateUserInterface();
+        }
+    });
+    
+    // Auto-retry connection every 30 seconds if offline
+    setInterval(() => {
+        if (!isServerConnected && !document.hidden) {
+            attemptServerConnection();
+        }
+    }, 30000);
+}
     </script>
-    <script src="js/auth.js"></script>
-    <script src="js/bookSystem.js"></script>
 </body>
 </html>

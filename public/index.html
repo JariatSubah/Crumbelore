@@ -6,6 +6,7 @@
     <title>Crumbelore - Where Stories Meet Sweet Sips</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="js/auth.js"></script>
     <style>
         * {
             margin: 0;
@@ -916,88 +917,69 @@
         }
 
         // Customer login function with working authentication
-        function customerLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('customer-email').value;
-            const password = document.getElementById('customer-password').value;
-            const button = event.target.querySelector('.login-btn');
-            
-            // Show loading state
-            button.classList.add('loading');
-            button.textContent = 'Signing in...';
-            button.disabled = true;
-            
-            // Simulate API call
+        async function customerLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('customer-email').value;
+    const password = document.getElementById('customer-password').value;
+    const button = event.target.querySelector('.login-btn');
+    
+    button.classList.add('loading');
+    button.innerHTML = '<span class="loading"></span> Signing in...';
+    button.disabled = true;
+    
+    try {
+        const result = await window.authSystem.login(email, password, 'customer');
+        
+        if (result.success) {
+            showNotification('Login successful! Redirecting...', 'success');
             setTimeout(() => {
-                // Check demo credentials or allow any @crumbelore.com email
-                if ((email === DEMO_CREDENTIALS.customer.email && password === DEMO_CREDENTIALS.customer.password) || 
-                    email.endsWith('@crumbelore.com')) {
-                    
-                    showNotification('Login successful! Redirecting to dashboard...', 'success');
-                    
-                    // Store user info (in real app, this would be handled by backend)
-                    localStorage.setItem('userType', 'customer');
-                    localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userName', email.split('@')[0]);
-                    
-                    // Redirect to dashboard
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 2000);
-                    
-                } else {
-                    showNotification('Invalid credentials. Try: customer@crumbelore.com / customer123', 'error');
-                    
-                    // Reset button
-                    button.classList.remove('loading');
-                    button.textContent = 'Sign In';
-                    button.disabled = false;
-                }
+                window.location.href = 'dashboard.html';
             }, 1500);
+        } else {
+            showNotification(result.error || 'Login failed', 'error');
+            resetLoginButton(button, 'Sign In');
         }
+    } catch (error) {
+        showNotification('Connection error - please try again', 'error');
+        resetLoginButton(button, 'Sign In');
+    }
+}
+
 
         // Admin login function
-        function adminLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
-            const button = event.target.querySelector('.login-btn');
-            
-            // Show loading state
-            button.classList.add('loading');
-            button.textContent = 'Verifying...';
-            button.disabled = true;
-            
-            // Simulate API call
+        async function adminLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('admin-email').value;
+    const password = document.getElementById('admin-password').value;
+    const button = event.target.querySelector('.login-btn');
+    
+    button.classList.add('loading');
+    button.innerHTML = '<span class="loading"></span> Verifying...';
+    button.disabled = true;
+    
+    try {
+        const result = await window.authSystem.login(email, password, 'admin');
+        
+        if (result.success) {
+            showNotification('Admin access granted!', 'success');
             setTimeout(() => {
-                // Check admin credentials
-                if (email === DEMO_CREDENTIALS.admin.email && password === DEMO_CREDENTIALS.admin.password) {
-                    
-                    showNotification('Admin access granted! Redirecting...', 'success');
-                     window.location.href = 'admin-dashboard.html';
-                    // Store admin info
-                    localStorage.setItem('userType', 'admin');
-                    localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userName', 'Admin');
-                    
-                    // Redirect to admin dashboard (you can create this later)
-                    setTimeout(() => {
-                        showNotification('Admin dashboard coming soon! Redirecting to customer dashboard...', 'info');
-                        window.location.href = 'dashboard.html';
-                    }, 2000);
-                    
-                } else {
-                    showNotification('Invalid admin credentials. Try: admin@crumbelore.com / admin123', 'error');
-                    
-                    // Reset button
-                    button.classList.remove('loading');
-                    button.textContent = 'Admin Login';
-                    button.disabled = false;
-                }
+                window.location.href = 'admin-dashboard.html';
             }, 1500);
+        } else {
+            showNotification(result.error || 'Invalid admin credentials', 'error');
+            resetLoginButton(button, 'Admin Login');
         }
+    } catch (error) {
+        showNotification('Connection error - please try again', 'error');
+        resetLoginButton(button, 'Admin Login');
+        }}
+        function resetLoginButton(button, text) {
+    button.classList.remove('loading');
+    button.innerHTML = text;
+    button.disabled = false;
+}
 
         // Newsletter subscription
         function subscribeNewsletter(event) {
@@ -1074,7 +1056,7 @@
             }, 2000);
         });
     </script>
-    <script src="js/auth.js"></script>
+    
 <script src="js/bookSystem.js"></script>
 </body>
 </html>

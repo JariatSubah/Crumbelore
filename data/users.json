@@ -5,5 +5,19 @@
     "name": "jariat",
     "type": "customer",
     "createdAt": "2025-09-26T15:41:26.315Z"
+  },
+  {
+    "id": 1758973846326,
+    "email": "tabita@gmail.com",
+    "name": "tabita",
+    "type": "customer",
+    "createdAt": "2025-09-27T11:50:46.326Z"
+  },
+  {
+    "id": 1758974827313,
+    "email": "test@example.com",
+    "name": "test",
+    "type": "customer",
+    "createdAt": "2025-09-27T12:07:07.313Z"
   }
 ]

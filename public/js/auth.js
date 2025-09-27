@@ -48,40 +48,50 @@ class AuthSystem {
     }
 
     handleOfflineLogin(email, password, userType) {
-        // Demo mode - validate format only
-        if (!email || !password) {
-            return { success: false, error: 'Email and password required' };
-        }
-
-        if (!email.includes('@')) {
-            return { success: false, error: 'Invalid email format' };
-        }
-
-        // Create demo user
-        const demoUser = {
-            id: Date.now(),
-            email: email,
-            name: email.split('@')[0],
-            type: userType
-        };
-
-        // Store in sessionStorage for demo
-        sessionStorage.setItem('authToken', 'demo-token-' + Date.now());
-        sessionStorage.setItem('currentUser', JSON.stringify(demoUser));
-        sessionStorage.setItem('userType', userType);
-
-        return { success: true, user: demoUser };
+    if (!email || !password) {
+        return { success: false, error: 'Email and password required' };
     }
+
+    if (!email.includes('@')) {
+        return { success: false, error: 'Invalid email format' };
+    }
+
+    const demoUser = {
+        id: Date.now(),
+        email: email,
+        name: email.split('@')[0],
+        type: userType
+    };
+
+    // Store in both sessionStorage AND localStorage for compatibility
+    sessionStorage.setItem('authToken', 'demo-token-' + Date.now());
+    sessionStorage.setItem('currentUser', JSON.stringify(demoUser));
+    sessionStorage.setItem('userType', userType);
+    
+    // Also store in localStorage so dashboard can find it
+    localStorage.setItem('userType', userType);
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userName', demoUser.name);
+    localStorage.setItem('authToken', 'demo-token-' + Date.now());
+
+    return { success: true, user: demoUser };
+}
 
     storeSession(token, user, userType) {
-        sessionStorage.setItem('authToken', token);
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
-        sessionStorage.setItem('userType', userType);
-        
-        // Set expiry (4 hours)
-        const expiry = Date.now() + (4 * 60 * 60 * 1000);
-        sessionStorage.setItem('authExpiry', expiry.toString());
-    }
+    // Store in sessionStorage (primary)
+    sessionStorage.setItem('authToken', token);
+    sessionStorage.setItem('currentUser', JSON.stringify(user));
+    sessionStorage.setItem('userType', userType);
+    
+    // Also store in localStorage for dashboard compatibility
+    localStorage.setItem('userType', userType);
+    localStorage.setItem('userEmail', user.email);
+    localStorage.setItem('userName', user.name);
+    localStorage.setItem('authToken', token);
+    
+    const expiry = Date.now() + (4 * 60 * 60 * 1000);
+    sessionStorage.setItem('authExpiry', expiry.toString());
+}
 
     getCurrentUser() {
         const userStr = sessionStorage.getItem('currentUser');

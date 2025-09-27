@@ -350,22 +350,14 @@
             margin-bottom: 1.5rem;
             opacity: 0.9;
            /* Modern browsers */
-
            display: -webkit-box;
-
            -webkit-line-clamp: 3;
-
            -webkit-box-orient: vertical;
-
            line-clamp: 3;  /* Standard property added */
-
            overflow: hidden;
-
   
            /* Fallback for older browsers */
-
            max-height: 4.8rem;
-
            text-overflow: ellipsis;
         }
 
@@ -860,6 +852,85 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="book-card" data-genre="mystery">
+                    <div class="bestseller-badge">Bestseller</div>
+                    <div class="book-cover">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The Silent Patient</h3>
+                        <p class="book-author">by Alex Michaelides</p>
+                        <span class="book-genre">Psychological Thriller</span>
+                        <p class="book-description">A gripping psychological thriller about a woman's act of violence against her husband and the therapist obsessed with uncovering her motive.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('The Silent Patient')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The Silent Patient')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="romance">
+                    <div class="book-cover">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The Seven Husbands of Evelyn Hugo</h3>
+                        <p class="book-author">by Taylor Jenkins Reid</p>
+                        <span class="book-genre">Contemporary Romance</span>
+                        <p class="book-description">A captivating story of Old Hollywood glamour and the price of fame, love, and ambition told through the eyes of a reclusive Hollywood icon.</p>
+                        <div class="book-status">
+                            <div class="availability available">
+                                <i class="fas fa-check-circle"></i>
+                                <span>2 copies available</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.9</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" onclick="reserveBook('The Seven Husbands of Evelyn Hugo')">Reserve Book</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The Seven Husbands of Evelyn Hugo')">Read More</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="book-card" data-genre="fantasy">
+                    <div class="book-cover">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">The House in the Cerulean Sea</h3>
+                        <p class="book-author">by TJ Klune</p>
+                        <span class="book-genre">Fantasy Romance</span>
+                        <p class="book-description">A heartwarming fantasy about a caseworker who discovers a group of magical children and finds a family he never knew he was looking for.</p>
+                        <div class="book-status">
+                            <div class="availability unavailable">
+                                <i class="fas fa-clock"></i>
+                                <span>Reserved (Available Dec 20)</span>
+                            </div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.7</span>
+                            </div>
+                        </div>
+                        <div class="book-actions">
+                            <button class="reserve-btn" disabled>Join Waitlist</button>
+                            <button class="read-more-btn" onclick="showBookDetails('The House in the Cerulean Sea')">Read More</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1146,17 +1217,18 @@
 
         // Book reading corner
         function bookReadingCorner() {
-            // Check if user is logged in
-            const isLoggedIn = localStorage.getItem('userType');
-            if (!isLoggedIn) {
-                if (confirm('You need to log in to reserve a reading corner. Would you like to go to the login page?')) {
-                    window.location.href = 'index.html#login';
-                }
-                return;
-            }
-            
-            showNotification('Reading corner reservation system coming soon!', 'info');
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem('userType');
+    if (!isLoggedIn) {
+        if (confirm('You need to log in to reserve a reading corner. Would you like to go to the login page?')) {
+            window.location.href = 'index.html#login';
         }
+        return;
+    }
+    
+    // Redirect to bookings page with reading-corner hash
+    window.location.href = 'bookings.html#reading-corner';
+}
 
         // Notification system
         function showNotification(message, type = 'info') {
@@ -1254,83 +1326,4 @@
         console.log('Crumbelore Library Page initialized successfully!');
     </script>
 </body>
-</html>-genre="mystery">
-                    <div class="bestseller-badge">Bestseller</div>
-                    <div class="book-cover">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="book-info">
-                        <h3 class="book-title">The Silent Patient</h3>
-                        <p class="book-author">by Alex Michaelides</p>
-                        <span class="book-genre">Psychological Thriller</span>
-                        <p class="book-description">A gripping psychological thriller about a woman's act of violence against her husband and the therapist obsessed with uncovering her motive.</p>
-                        <div class="book-status">
-                            <div class="availability available">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Available</span>
-                            </div>
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.8</span>
-                            </div>
-                        </div>
-                        <div class="book-actions">
-                            <button class="reserve-btn" onclick="reserveBook('The Silent Patient')">Reserve Book</button>
-                            <button class="read-more-btn" onclick="showBookDetails('The Silent Patient')">Read More</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="book-card" data-genre="romance">
-                    <div class="book-cover">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <div class="book-info">
-                        <h3 class="book-title">The Seven Husbands of Evelyn Hugo</h3>
-                        <p class="book-author">by Taylor Jenkins Reid</p>
-                        <span class="book-genre">Contemporary Romance</span>
-                        <p class="book-description">A captivating story of Old Hollywood glamour and the price of fame, love, and ambition told through the eyes of a reclusive Hollywood icon.</p>
-                        <div class="book-status">
-                            <div class="availability available">
-                                <i class="fas fa-check-circle"></i>
-                                <span>2 copies available</span>
-                            </div>
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.9</span>
-                            </div>
-                        </div>
-                        <div class="book-actions">
-                            <button class="reserve-btn" onclick="reserveBook('The Seven Husbands of Evelyn Hugo')">Reserve Book</button>
-                            <button class="read-more-btn" onclick="showBookDetails('The Seven Husbands of Evelyn Hugo')">Read More</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="book-card" data-genre="fantasy">
-                    <div class="book-cover">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <div class="book-info">
-                        <h3 class="book-title">The House in the Cerulean Sea</h3>
-                        <p class="book-author">by TJ Klune</p>
-                        <span class="book-genre">Fantasy Romance</span>
-                        <p class="book-description">A heartwarming fantasy about a caseworker who discovers a group of magical children and finds a family he never knew he was looking for.</p>
-                        <div class="book-status">
-                            <div class="availability unavailable">
-                                <i class="fas fa-clock"></i>
-                                <span>Reserved (Available Dec 20)</span>
-                            </div>
-                            <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <span>4.7</span>
-                            </div>
-                        </div>
-                        <div class="book-actions">
-                            <button class="reserve-btn" disabled>Join Waitlist</button>
-                            <button class="read-more-btn" onclick="showBookDetails('The House in the Cerulean Sea')">Read More</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="book-card" data
+</html>

@@ -1238,12 +1238,24 @@
                     dateInput.setAttribute('min', today);
                 }
                 handleScrollAnimations();
+                 checkURLHash();
                 console.log('Bookings page initialized successfully!');
             } catch (error) {
                 console.error('Error initializing page:', error);
             }
         }
-
+        // Check URL hash and open appropriate modal
+     function checkURLHash() {
+    try {
+        const hash = window.location.hash.substring(1); // Remove the #
+        if (hash && bookingPrices[hash]) {
+            setTimeout(() => {
+                openBookingModal(hash);
+            }, 500); // Small delay to ensure page is loaded
+        }
+    } catch (error) {
+        console.error('Error checking URL hash:', error);
+    }}
         // Open booking modal
         function openBookingModal(type) {
             try {

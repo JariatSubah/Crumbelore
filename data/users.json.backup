@@ -26,12 +26,5 @@
     "name": "admin",
     "type": "admin",
     "createdAt": "2025-09-27T17:39:57.363Z"
-  },
-  {
-    "id": 1758994818091,
-    "email": "admin@crumbelore.com",
-    "name": "admin",
-    "type": "admin",
-    "createdAt": "2025-09-27T17:40:18.091Z"
   }
 ]

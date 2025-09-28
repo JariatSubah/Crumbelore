@@ -1206,34 +1206,8 @@
 
             // Check for admin session
             const adminSession = sessionStorage.getItem('adminAuthenticated');
-            const adminUser = sessionStorage.getItem('adminUser');
+            const adminUser = sessionStorage.getItem('adminUser');}
 
-            if (!adminSession || !adminUser) {
-                // Redirect to login
-                promptAdminLogin();
-                return false;
-            }
-
-            return true;
-        }
-
-        // Admin login prompt for localhost
-        function promptAdminLogin() {
-            const username = prompt('Admin Username:');
-            const password = prompt('Admin Password:');
-
-            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                sessionStorage.setItem('adminAuthenticated', 'true');
-                sessionStorage.setItem('adminUser', username);
-                showNotification('Admin login successful', 'success');
-                initDashboard();
-            } else {
-                showNotification('Invalid admin credentials', 'error');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 2000);
-            }
-        }
 
         // Navigation between sections
         function showSection(sectionId) {

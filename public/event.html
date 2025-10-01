@@ -353,7 +353,7 @@
             justify-content: center;
             font-size: 3.5rem;
             color: #8B4513;
-            opacity: 0.8;
+           /* opacity: 0.8; */
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -377,6 +377,12 @@
         .visual-item:first-child {
             grid-row: span 2;
         }
+        .visual-item img {
+    width: 100%;         
+    height: 100%;        
+    object-fit: cover;   
+    border-radius: 20px;
+}
 
         /* Events Section */
         .events-section {
@@ -738,7 +744,7 @@
             
             <div class="featured-card fade-in-up">
                 <div class="featured-content">
-                    <h3>Author Spotlight: Satine Nefertiti</h3>
+                    <h3>Author Spotlight: Amani Bin Zahid</h3>
                     <div class="event-meta">
                         <div class="meta-item">
                             <i class="fas fa-calendar-alt"></i>
@@ -755,7 +761,7 @@
                     </div>
                     
                     <p class="featured-description">
-                        Join us for an exclusive evening with bestselling fantasy author Satine Nefertiti as she discusses her latest novel, shares writing insights, and answers questions from fans. Enjoy themed refreshments perfectly paired with her fantasy worlds.
+                         Join us for an exclusive evening with acclaimed fashion and lifestyle author Amani Bin Zahid as she unveils her latest book, Runway To Reality. Discover the inspirations behind her exquisite designs, gain insider insights into the art of fashion storytelling, and participate in an engaging Q&A session. Enjoy curated refreshments inspired by elegance and style, perfectly complementing the luxurious world of couture captured in her book.
                     </p>
                     
                     <div class="event-highlights">
@@ -785,13 +791,14 @@
                 
                 <div class="featured-visual fade-in-right">
                     <div class="visual-item">
-                        <i class="fas fa-feather-alt"></i>
+                        <img src="Images/achol.jpg">    
+                  <!-- <i class="fas fa-feather-alt"></i> -->
                     </div>
                     <div class="visual-item">
-                        <i class="fas fa-book-open"></i>
+                       <img src="Images/achol-book.jpg">
                     </div>
                     <div class="visual-item">
-                        <i class="fas fa-coffee"></i>
+                         <img src="Images/achol-coffee.jpg">
                     </div>
                 </div>
             </div>

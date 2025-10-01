@@ -828,7 +828,6 @@
 
             body.dark-mode ::-webkit-scrollbar-thumb:hover {
                 background: linear-gradient(180deg, #A66E42, #8B5939);
-            });
             }
 
             body.dark-mode .filter-section,
@@ -1140,24 +1139,39 @@
         }
 
         function setTranslate(xPos, yPos, el) {
-            el.style.right = 'auto';
-            el.style.bottom = 'auto';
-            el.style.left = `${window.innerWidth - 60 - 32 + xPos}px`;
-            el.style.top = `${window.innerHeight - 60 - 128 + yPos}px`;
-        }
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    
+    // Calculate safe boundaries - keep button visible
+    const maxX = window.innerWidth - 80;
+    const maxY = window.innerHeight - 80;
+    
+    // Ensure button stays within viewport
+    const safeX = Math.max(20, Math.min(xPos, maxX));
+    const safeY = Math.max(20, Math.min(yPos, maxY));
+    
+    el.style.left = `${safeX}px`;
+    el.style.top = `${safeY}px`;
+}
 
         // Restore saved position
-        const savedX = parseFloat(localStorage.getItem('cookieButtonX')) || 0;
-        const savedY = parseFloat(localStorage.getItem('cookieButtonY')) || 0;
-        
-        if (savedX !== 0 || savedY !== 0) {
-            xOffset = savedX;
-            yOffset = savedY;
-            setTranslate(savedX, savedY, button);
-        }
-        
-        document.body.appendChild(button);
-    }
+
+  const savedX = parseFloat(localStorage.getItem('cookieButtonX')) || 0;
+const savedY = parseFloat(localStorage.getItem('cookieButtonY')) || 0;
+
+// Ensure saved positions are within viewport
+const maxX = window.innerWidth - 80;
+const maxY = window.innerHeight - 80;
+
+const safeX = Math.max(20, Math.min(savedX, maxX));
+const safeY = Math.max(20, Math.min(savedY, maxY));
+
+if (safeX !== 0 || safeY !== 0) {
+    xOffset = safeX;
+    yOffset = safeY;
+    setTranslate(safeX, safeY, button);
+}  document.body.appendChild(button);
+}
 
     // Open fun modal
     function openFunModal() {
@@ -1879,5 +1893,4 @@ function initializeAmbientSound() {
         toggleSound,
         updateVolume
     };
-
 })();

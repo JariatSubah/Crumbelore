@@ -482,14 +482,16 @@
 
             body.dark-mode .hero,
             body.dark-mode .menu-hero,
-            body.dark-mode .library-hero {
+            body.dark-mode .library-hero,
+            body.dark-mode .booking-hero{
                 filter: brightness(0.65) contrast(1.15) saturate(0.9);
                 position: relative;
             }
 
             body.dark-mode .hero::after,
             body.dark-mode .menu-hero::after,
-            body.dark-mode .library-hero::after {
+            body.dark-mode .library-hero::after,
+            body.dark-mode .booking-hero::after {
                 content: '';
                 position: absolute;
                 top: 0;
@@ -513,7 +515,8 @@
             body.dark-mode .feature-card,
             body.dark-mode .event-card,
             body.dark-mode .book-card,
-            body.dark-mode .menu-item {
+            body.dark-mode .menu-item, 
+            body.dark-mode .booking-card {
                 background: 
                     linear-gradient(135deg, rgba(31, 24, 18, 0.9) 0%, rgba(42, 32, 22, 0.9) 100%) !important;
                 backdrop-filter: blur(10px);
@@ -529,7 +532,9 @@
             body.dark-mode .feature-card::before,
             body.dark-mode .event-card::before,
             body.dark-mode .book-card::before,
-            body.dark-mode .menu-item::before {
+            body.dark-mode .menu-item::before,
+            body.dark-mode .booking-card::before
+             {
                 content: '';
                 position: absolute;
                 top: -50%;
@@ -544,14 +549,17 @@
             body.dark-mode .feature-card:hover::before,
             body.dark-mode .event-card:hover::before,
             body.dark-mode .book-card:hover::before,
-            body.dark-mode .menu-item:hover::before {
+            body.dark-mode .menu-item:hover::before,
+            body.dark-mode .booking-card:hover::before
+            {
                 opacity: 1;
             }
 
             body.dark-mode .feature-card:hover,
             body.dark-mode .event-card:hover,
             body.dark-mode .book-card:hover,
-            body.dark-mode .menu-item:hover {
+            body.dark-mode .menu-item:hover,
+            body.dark-mode .booking-card:hover {
                 background: 
                     linear-gradient(135deg, rgba(42, 32, 22, 0.95) 0%, rgba(52, 40, 24, 0.95) 100%) !important;
                 box-shadow: 

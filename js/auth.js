@@ -1,4 +1,3 @@
-//  auth.js 
 class AuthSystem {
     constructor() {
         this.baseURL = this.getBaseURL();

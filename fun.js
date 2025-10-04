@@ -1,6 +1,4 @@
-// Crumbelore Interactive Features Module
-// fun.js - External interactive features for all pages
-
+// Interactive Features Module
 (function() {
     'use strict';
 
@@ -1530,7 +1528,7 @@ if (safeX !== 0 || safeY !== 0) {
         toggle.classList.toggle('active');
         toggle.querySelector('.dark-mode-slider').textContent = isDark ? '🌙' : '☀️';
         
-        // Update modal text with animation
+        // modal text with animation
         const modal = toggle.closest('.fun-modal-content');
         const icon = modal.querySelector('.dark-mode-panel > div');
         const title = modal.querySelector('h3');
@@ -1658,7 +1656,7 @@ function openAmbientSound() {
     restoreSoundStates(modal);
 }
 
-// FIXED: Toggle sound function with proper error handling
+//Toggle sound function with proper error handling
 function toggleSound(element, soundType) {
     const isActive = element.classList.contains('active');
     
@@ -1686,7 +1684,7 @@ function toggleSound(element, soundType) {
     localStorage.setItem('soundStates', JSON.stringify(soundStates));
 }
 
-// FIXED: Audio file configuration - using free online ambient sounds
+//  Audio file configuration 
 const AUDIO_FILES = {
     coffee: 'sounds/coffee.mp3', 
     pages: 'sounds/pages.mp3',  
@@ -1694,7 +1692,7 @@ const AUDIO_FILES = {
     rain: 'sounds/rain.mp3'
 };
 
-// FIXED: Play sound with proper error handling
+//  Play sound 
 function playSound(soundType) {
     // Stop any existing sound first
     stopSound(soundType);
@@ -1743,7 +1741,7 @@ function playSound(soundType) {
     }
 }
 
-// FIXED: Stop sound function
+// Stop sound function
 function stopSound(soundType) {
     if (window.activeSounds && window.activeSounds[soundType]) {
         try {
@@ -1760,7 +1758,7 @@ function stopSound(soundType) {
     }
 }
 
-// FIXED: Update volume function
+// volume function
 function updateVolume(value) {
     const volumeValue = document.getElementById('volumeValue');
     if (volumeValue) {
@@ -1770,7 +1768,7 @@ function updateVolume(value) {
     localStorage.setItem('ambientVolume', value);
     const volumeMultiplier = value / 100;
     
-    // Update volume for all active sounds
+    //  volume for all active sounds
     if (window.activeSounds) {
         Object.keys(window.activeSounds).forEach(soundType => {
             const sound = window.activeSounds[soundType];
@@ -1781,12 +1779,12 @@ function updateVolume(value) {
     }
 }
 
-// FIXED: Restore sound states
+//  Restore sound states
 function restoreSoundStates(modal) {
     const soundStates = JSON.parse(localStorage.getItem('soundStates') || '{}');
     const volume = localStorage.getItem('ambientVolume') || 50;
     
-    // Update UI toggles
+    // UI toggles
     Object.keys(soundStates).forEach(soundType => {
         if (soundStates[soundType]) {
             const control = modal.querySelector(`[data-sound="${soundType}"]`);
@@ -1796,7 +1794,7 @@ function restoreSoundStates(modal) {
         }
     });
     
-    // Update volume slider
+    // volume slider
     const volumeSlider = modal.querySelector('.volume-slider');
     const volumeValue = modal.querySelector('#volumeValue');
     if (volumeSlider && volumeValue) {
@@ -1805,7 +1803,7 @@ function restoreSoundStates(modal) {
     }
 }
 
-// FIXED: Stop all sounds when leaving page
+// Stop all sounds when leaving page
 window.addEventListener('beforeunload', () => {
     if (window.activeSounds) {
         Object.keys(window.activeSounds).forEach(soundType => {
@@ -1814,7 +1812,7 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-// FIXED: Initialize ambient sound system
+// Initialize ambient sound system
 function initializeAmbientSound() {
     // Just ensure the activeSounds object exists
     if (!window.activeSounds) {

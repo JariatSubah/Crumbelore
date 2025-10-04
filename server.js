@@ -1,4 +1,4 @@
-// server.js - Fixed version with proper error handling and authentication
+// server.js
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,7 +7,7 @@ const fs = require('fs').promises;
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware - Fixed CORS configuration
+// Middleware
 app.use(cors({
     origin: [
         'http://localhost:3000', 
@@ -24,7 +24,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname)));
-   // Handle preflight OPTIONS requests - CORRECTED VERSION
+   // Handle preflight OPTIONS requests 
 app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -484,7 +484,7 @@ app.post('/api/menu', validateRequired(['name', 'category', 'price']), async (re
             createdAt: new Date().toISOString()
         };
         
-        // In a real app, you'd save to database
+        // In a real app, have to save to database
         console.log('New menu item created:', newMenuItem);
         res.status(201).json(newMenuItem);
     } catch (error) {

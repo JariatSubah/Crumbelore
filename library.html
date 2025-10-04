@@ -358,7 +358,7 @@
            display: -webkit-box;
            -webkit-line-clamp: 3;
            -webkit-box-orient: vertical;
-           line-clamp: 3;  /* Standard property added */
+           line-clamp: 3;  /* Standard property */
            overflow: hidden;
   
            /* Fallback for older browsers */
@@ -1391,14 +1391,6 @@
         // Initialize
         window.addEventListener('load', function() {
             handleScrollAnimations();
-            
-            // Welcome message for logged-in users
-            const userName = localStorage.getItem('userName');
-            if (userName) {
-                setTimeout(() => {
-                    showNotification(`Welcome back to our library, ${userName}!`, 'info');
-                }, 1000);
-            }
         });
 
         window.addEventListener('scroll', handleScrollAnimations);

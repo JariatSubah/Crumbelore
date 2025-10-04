@@ -1,4 +1,4 @@
-// bookSystem.js - Book management and reservation system
+// Book management and reservation system
 class BookSystem {
     constructor() {
         this.books = this.loadBooks();

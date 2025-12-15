@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <script src="js/auth.js"></script>
-    <script src="js/bookSystem.js"></script>
+    <script src="js/realtime-sync.js"></script>
     <script src="fun.js"></script>
 
     <style>
@@ -1407,6 +1407,248 @@
         });
 
         console.log('Crumbelore Library Page initialized successfully!');
+
+// Add this to library.html <script> section
+
+// ========== REAL-TIME BOOK UPDATES ==========
+
+// Initialize real-time sync for books
+function initRealtimeBookSync() {
+    console.log('📚 Initializing real-time book sync...');
+    
+    // Start syncing books every 15 seconds
+    window.realtimeSync.startSync('books', 15);
+    
+    // Register callback for book updates
+    window.realtimeSync.onUpdate('books', (books) => {
+        console.log(`📚 Books updated: ${books.length} items`);
+        
+        // Update the display
+        displayBooks(books);
+        
+        // Show notification
+        showBookUpdateNotification(`Library updated: ${books.length} books`);
+        
+        // Re-trigger animations
+        setTimeout(handleScrollAnimations, 100);
+    });
+}
+
+// Display books in the grid
+function displayBooks(books) {
+    const featuredSection = document.querySelector('.featured-books');
+    if (!featuredSection) return;
+    
+    // Clear existing books (keep hardcoded ones or replace all)
+    // For this example, we'll add Django books alongside hardcoded ones
+    
+    const existingBooks = featuredSection.querySelectorAll('.book-card');
+    const djangoBooks = existingBooks.length > 0 ? 
+        Array.from(existingBooks).filter(card => !card.dataset.djangoBook) : [];
+    
+    // Create book cards from Django
+    const bookCards = books.slice(0, 6).map(book => createBookCard(book));
+    
+    // Combine and display
+    featuredSection.innerHTML = '';
+    djangoBooks.forEach(card => featuredSection.appendChild(card));
+    bookCards.forEach(card => featuredSection.appendChild(card));
+}
+
+// Create book card from Django data
+function createBookCard(book) {
+    const card = document.createElement('div');
+    card.className = 'book-card fade-in-up';
+    card.dataset.djangoBook = 'true';
+    card.dataset.genre = book.genre || 'fiction';
+    
+    // Determine icon based on genre
+    const genreIcons = {
+        'mystery': 'fa-search',
+        'romance': 'fa-heart',
+        'fantasy': 'fa-magic',
+        'sci-fi': 'fa-rocket',
+        'non-fiction': 'fa-brain',
+        'biography': 'fa-user-circle',
+        'poetry': 'fa-feather-alt',
+        'young-adult': 'fa-star'
+    };
+    
+    const icon = genreIcons[book.genre] || 'fa-book';
+    const isAvailable = book.status === 'available';
+    
+    card.innerHTML = `
+        ${book.rating >= 4.5 ? '<div class="bestseller-badge">Bestseller</div>' : ''}
+        <div class="book-cover">
+            <i class="fas ${icon}"></i>
+        </div>
+        <div class="book-info">
+            <h3 class="book-title">${book.title}</h3>
+            <p class="book-author">by ${book.author}</p>
+            <span class="book-genre">${formatGenre(book.genre)}</span>
+            <p class="book-description">${book.description || 'A fascinating book from our collection.'}</p>
+            <div class="book-status">
+                <div class="availability ${isAvailable ? 'available' : 'unavailable'}">
+                    <i class="fas fa-${isAvailable ? 'check-circle' : 'clock'}"></i>
+                    <span>${isAvailable ? 'Available' : 'Reserved'}</span>
+                </div>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <span>${book.rating || '4.0'}</span>
+                </div>
+            </div>
+            <div class="book-actions">
+                <button class="reserve-btn" ${!isAvailable ? 'disabled' : ''} 
+                    onclick="reserveBook('${book.title.replace(/'/g, "\\'")}')">
+                    ${isAvailable ? 'Reserve Book' : 'Join Waitlist'}
+                </button>
+                <button class="read-more-btn" 
+                    onclick="showBookDetails('${book.title.replace(/'/g, "\\'")}')">
+                    Read More
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Add to books database for detail view
+    if (!booksDatabase[book.title]) {
+        booksDatabase[book.title] = {
+            author: book.author,
+            genre: formatGenre(book.genre),
+            pages: book.pages || 300,
+            year: book.published_year || new Date().getFullYear(),
+            isbn: book.isbn || 'N/A',
+            description: book.description || 'A fascinating addition to our collection.',
+            icon: icon,
+            available: isAvailable,
+            rating: book.rating || 4.0
+        };
+    }
+    
+    return card;
+}
+
+// Format genre name
+function formatGenre(genre) {
+    const genreMap = {
+        'mystery': 'Mystery & Thriller',
+        'romance': 'Romance',
+        'fantasy': 'Fantasy',
+        'sci-fi': 'Science Fiction',
+        'non-fiction': 'Non-Fiction',
+        'biography': 'Biography',
+        'poetry': 'Poetry',
+        'young-adult': 'Young Adult'
+    };
+    return genreMap[genre] || genre;
+}
+
+// Show book update notification
+function showBookUpdateNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'book-update-notification';
+    notification.innerHTML = `
+        <i class="fas fa-book"></i>
+        <span>${message}</span>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: linear-gradient(135deg, #654321, #8B4513);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Load books with real-time support
+async function loadBooksWithRealtime() {
+    try {
+        console.log('📚 Loading books with real-time sync...');
+        
+        // Initial fetch
+        const books = await window.realtimeSync.fetchData('books');
+        
+        if (books && books.length > 0) {
+            console.log(`✅ Loaded ${books.length} books from Django`);
+            displayBooks(books);
+            
+            // Start real-time sync
+            initRealtimeBookSync();
+            
+            showNotification(`✅ ${books.length} books loaded. Live updates enabled!`, 'success');
+        } else {
+            console.log('No Django books found, using hardcoded books');
+        }
+        
+        setTimeout(handleScrollAnimations, 100);
+        
+    } catch (error) {
+        console.error('Error loading books:', error);
+        showNotification('Using cached library data', 'info');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        loadBooksWithRealtime();
+    }, 500);
+});
+
+// Add manual refresh button
+function addLibraryRefreshButton() {
+    const refreshBtn = document.createElement('button');
+    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Library';
+    refreshBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #654321, #8B4513);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.3);
+        z-index: 1500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    `;
+    
+    refreshBtn.onclick = async () => {
+        const icon = refreshBtn.querySelector('i');
+        icon.style.animation = 'spin 1s linear';
+        await loadBooksWithRealtime();
+        setTimeout(() => icon.style.animation = '', 1000);
+    };
+    
+    document.body.appendChild(refreshBtn);
+}
+
+window.addEventListener('load', addLibraryRefreshButton);
+
+console.log('✅ Real-time book sync initialized for Library page');
+
+
     </script>
 </body>
 </html>

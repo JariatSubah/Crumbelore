@@ -8,7 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <script src="js/auth.js"></script>
-    <script src="js/bookSystem.js"></script>
+    <script>
+     window.API_BASE_URL = "http://127.0.0.1:8000/api";
+    </script>
+    <script src="js/realtime-sync.js"></script>
     <script src="fun.js"></script>
 
     <style>
@@ -687,451 +690,33 @@
     <section class="menu-section">
         <!-- Coffee Section -->
         <div class="category-section coffee-category fade-in-up">
-            <h2 class="category-title">Artisan Coffee</h2>
-            <div class="menu-grid">
-                <div class="menu-item">
-                    <div class="bestseller">Bestseller</div>
-                    <div class="item-image"style="background-image: url('Images/classic-espresso.jpg');">
-            
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Classic Espresso</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 5 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best with dark chocolate</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳180</div>
-                        </div>
-                        <p class="item-description">Rich, full-bodied espresso shot extracted from our signature blend of Ethiopian and Colombian beans.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Ethiopian Coffee Beans</span>
-                                <span class="ingredient-tag">Colombian Beans</span>
-                                <span class="ingredient-tag">Pure Water</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-book"></i>
-                                Perfect with Mystery Novels
-                            </div>
-                            <div class="pairing-text">The intensity matches thrilling plot twists</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Classic Espresso', 180)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image"style="background-image: url('Images/vanilla-latte.jpg');">
-                        <i class="fas fa-coffee" style="display: none;"></i>
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Vanilla Dream Latte</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 220 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Extra foam on request</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳280</div>
-                        </div>
-                        <p class="item-description">Smooth espresso with steamed milk and a touch of Madagascar vanilla, topped with silky microfoam.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Espresso</span>
-                                <span class="ingredient-tag">Steamed Milk</span>
-                                <span class="ingredient-tag">Madagascar Vanilla</span>
-                                <span class="ingredient-tag">Microfoam</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-heart"></i>
-                                Perfect with Romance Novels
-                            </div>
-                            <div class="pairing-text">Sweet and comforting like a love story</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Vanilla Dream Latte', 280)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/caramel-macchiato.jpg');">
-                        <i class="fas fa-mug-hot" style="display: none;"></i>
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Caramel Macchiato</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 250 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Cross-hatch design</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳320</div>
-                        </div>
-                        <p class="item-description">Espresso marked with steamed milk and finished with our house-made caramel drizzle.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Espresso</span>
-                                <span class="ingredient-tag">Steamed Milk</span>
-                                <span class="ingredient-tag">House Caramel</span>
-                                <span class="ingredient-tag">Vanilla Syrup</span>
-                            </div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Caramel Macchiato', 320)">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <h2 class="category-title">Artisan Coffee</h2>
+    <div class="menu-grid" data-category="Coffee">
+        <!-- Dynamic products will appear here -->
+    </div>
+</div>
 
         <!-- Desserts Section -->
         <div class="category-section desserts-category fade-in-up">
-            <h2 class="category-title">Sweet Creations</h2>
-            <div class="menu-grid">
-                <div class="menu-item">
-                    <div class="bestseller">Chef's Special</div>
-                    <div class="item-image" style="background-image: url('Images/red-velvet-cake.jpg');"> <i class="fas fa-mug-hot"style="display: none;"></i> </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Red Velvet Romance</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 380 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best served chilled</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳450</div>
-                        </div>
-                        <p class="item-description">Moist red velvet cake layered with cream cheese frosting and a hint of cocoa, garnished with fresh berries.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Red Velvet Sponge</span>
-                                <span class="ingredient-tag">Cream Cheese</span>
-                                <span class="ingredient-tag">Cocoa Powder</span>
-                                <span class="ingredient-tag">Fresh Berries</span>
-                                <span class="ingredient-tag">Butter</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-heart"></i>
-                                Perfect with Romance Novels
-                            </div>
-                            <div class="pairing-text">Rich and passionate like a great love story</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Red Velvet Romance', 450)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/chocolate-tart.jpg');"> 
-            
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Dark Chocolate Mystery Tart</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 320 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> 70% dark chocolate</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳420</div>
-                        </div>
-                        <p class="item-description">Decadent dark chocolate tart with silky ganache filling and a buttery almond crust.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Dark Chocolate (70%)</span>
-                                <span class="ingredient-tag">Heavy Cream</span>
-                                <span class="ingredient-tag">Almond Flour</span>
-                                <span class="ingredient-tag">Butter</span>
-                                <span class="ingredient-tag">Sugar</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-search"></i>
-                                Perfect with Mystery & Thriller
-                            </div>
-                            <div class="pairing-text">Dark and intense like a good mystery</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Dark Chocolate Mystery Tart', 420)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/cosmic-brownies.jpg');">
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Cosmic Brownies</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 290 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Warm slightly before serving</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳350</div>
-                        </div>
-                        <p class="item-description">Fudgy brownies with chunks of dark chocolate and a sprinkle of edible gold stars.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Dark Chocolate</span>
-                                <span class="ingredient-tag">Cocoa Powder</span>
-                                <span class="ingredient-tag">Butter</span>
-                                <span class="ingredient-tag">Brown Sugar</span>
-                                <span class="ingredient-tag">Edible Gold Stars</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-rocket"></i>
-                                Perfect with Sci-Fi Novels
-                            </div>
-                            <div class="pairing-text">Out of this world taste for cosmic adventures</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Cosmic Brownies', 350)">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <h2 class="category-title">Sweet Creations</h2>
+    <div class="menu-grid" data-category="Desserts">
+        <!-- Dynamic products will appear here -->
+    </div>
+</div>
         <!-- Book Specials Section -->
         <div class="category-section books-category fade-in-up">
-            <h2 class="category-title">Literary Specials</h2>
-            <div class="menu-grid">
-                <div class="menu-item">
-                    <div class="bestseller">Book Club Favorite</div>
-                    <div class="item-image"style="background-image: url('Images/philosopher-blend.jpg');">
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Philosopher's Blend</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 180 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Medium roast perfection</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳300</div>
-                        </div>
-                        <p class="item-description">A thoughtful medium roast blend with notes of hazelnut and vanilla, designed for deep contemplation.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Medium Roast Beans</span>
-                                <span class="ingredient-tag">Hazelnut Notes</span>
-                                <span class="ingredient-tag">Vanilla Essence</span>
-                                <span class="ingredient-tag">Steamed Milk</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-brain"></i>
-                                Perfect with Philosophy & Non-Fiction
-                            </div>
-                            <div class="pairing-text">Stimulates deep thinking and reflection</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Philosopher\'s Blend', 300)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/fantasy-forest-latte.jpg');"> 
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Fantasy Forest Latte</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 260 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Emerald green foam art</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳380</div>
-                        </div>
-                        <p class="item-description">Matcha-infused latte with hints of mint and honey, topped with emerald-colored foam art.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Premium Matcha</span>
-                                <span class="ingredient-tag">Fresh Mint</span>
-                                <span class="ingredient-tag">Wildflower Honey</span>
-                                <span class="ingredient-tag">Oat Milk</span>
-                                <span class="ingredient-tag">Natural Green Coloring</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-dragon"></i>
-                                Perfect with Fantasy Novels
-                            </div>
-                            <div class="pairing-text">Magical taste for magical worlds</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Fantasy Forest Latte', 380)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/Poets-inspiration.jpg');">
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Poet's Inspiration</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 200 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Best sipped slowly</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳320</div>
-                        </div>
-                        <p class="item-description">Light roast with floral notes of jasmine and bergamot, served in our vintage teacup collection.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Ingredients</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Light Roast Coffee</span>
-                                <span class="ingredient-tag">Jasmine Essence</span>
-                                <span class="ingredient-tag">Bergamot Oil</span>
-                                <span class="ingredient-tag">Rose Petals</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-pen-fancy"></i>
-                                Perfect with Poetry & Literature
-                            </div>
-                            <div class="pairing-text">Delicate flavors for beautiful words</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Poet\'s Inspiration', 320)">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <h2 class="category-title">Literary Specials</h2>
+    <div class="menu-grid" data-category="Book">
+        <!-- Dynamic products will appear here -->
+    </div>
+</div>
         <!-- Literary Pairings Section -->
         <div class="category-section pairings-category fade-in-up">
-            <h2 class="category-title">Literary Pairing Combos</h2>
-            <div class="menu-grid">
-                <div class="menu-item">
-                    <div class="bestseller">Most Popular</div>
-                    <div class="item-image" style="background-image:url('Images/romance-delight.jpg');">
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Romance Reader's Delight</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 600 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Perfect for cozy reading</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳650</div>
-                        </div>
-                        <p class="item-description">Vanilla Dream Latte + Red Velvet Romance + A curated romance novel from our collection.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Includes</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Vanilla Dream Latte</span>
-                                <span class="ingredient-tag">Red Velvet Romance Cake</span>
-                                <span class="ingredient-tag">Romance Novel</span>
-                                <span class="ingredient-tag">Complimentary Bookmark</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-book-heart"></i>
-                                Complete Romance Experience
-                            </div>
-                            <div class="pairing-text">Sweet treats for sweet love stories - save ৳100!</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Romance Reader\'s Delight', 650)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image"style="background-image: url('Images/mystery-solver-kit.jpg');"> 
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Mystery Solver's Kit</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 500 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Intense flavors for intense plots</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳580</div>
-                        </div>
-                        <p class="item-description">Classic Espresso + Dark Chocolate Mystery Tart + A gripping mystery novel to solve.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Includes</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Classic Espresso</span>
-                                <span class="ingredient-tag">Dark Chocolate Tart</span>
-                                <span class="ingredient-tag">Mystery Novel</span>
-                                <span class="ingredient-tag">Detective's Notebook</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-magnifying-glass"></i>
-                                Perfect Detective Experience
-                            </div>
-                            <div class="pairing-text">Dark, intense flavors for thrilling mysteries - save ৳80!</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Mystery Solver\'s Kit', 580)">Add to Cart</button>
-                    </div>
-                </div>
-
-                <div class="menu-item">
-                    <div class="item-image" style="background-image: url('Images/scifi-explorer-pack.jpg');"> 
-                    </div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <div>
-                                <h3 class="item-name">Sci-Fi Explorer's Pack</h3>
-                                <div class="item-details">
-                                    <span class="calories"><i class="fas fa-fire"></i> 550 cal</span>
-                                    <span class="barista-tip"><i class="fas fa-lightbulb"></i> Futuristic presentation</span>
-                                </div>
-                            </div>
-                            <div class="item-price">৳620</div>
-                        </div>
-                        <p class="item-description">Fantasy Forest Latte + Cosmic Brownies + A mind-bending sci-fi adventure.</p>
-                        <div class="item-ingredients">
-                            <div class="ingredients-title">Includes</div>
-                            <div class="ingredients-list">
-                                <span class="ingredient-tag">Fantasy Forest Latte</span>
-                                <span class="ingredient-tag">Cosmic Brownies</span>
-                                <span class="ingredient-tag">Sci-Fi Novel</span>
-                                <span class="ingredient-tag">Galaxy Bookmark</span>
-                            </div>
-                        </div>
-                        <div class="pairing-suggestion">
-                            <div class="pairing-title">
-                                <i class="fas fa-space-shuttle"></i>
-                                Intergalactic Reading Journey
-                            </div>
-                            <div class="pairing-text">Out-of-this-world combination - save ৳110!</div>
-                        </div>
-                        <button class="add-to-cart" onclick="addToCart('Sci-Fi Explorer\'s Pack', 620)">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <h2 class="category-title">Literary Pairing Combos</h2>
+    <div class="menu-grid" data-category="Combo">
+        <!-- Dynamic products will appear here -->
+    </div>
+</div>
 
     <!-- Cart Sidebar -->
     <div class="cart-sidebar" id="cartSidebar">
@@ -1345,20 +930,20 @@
         });
 
         //CSS animation for notification
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(notificationStyles);
 
         // Handle navigation properly
         document.addEventListener('DOMContentLoaded', function() {
@@ -1451,6 +1036,213 @@ async function loadProducts() {
     }
 }
 
+// Add this to menu.html <script> section (after existing loadProducts function)
+
+// ========== REAL-TIME PRODUCT UPDATES ==========
+
+// Initialize real-time sync for products
+function initRealtimeProductSync() {
+    console.log('🔄 Initializing real-time product sync...');
+    
+    // Start syncing products every 10 seconds
+    window.realtimeSync.startSync('products', 10);
+    
+    // Register callback for product updates
+    window.realtimeSync.onUpdate('products', (products) => {
+        console.log(`📦 Products updated: ${products.length} items`);
+        
+        // Update the display
+        organizeAndDisplayProducts(products, 'http://127.0.0.1:8000');
+        
+        // Show visual indicator
+        showUpdateIndicator('Products refreshed');
+        
+        // Re-trigger animations
+        setTimeout(handleScrollAnimations, 100);
+    });
+}
+
+// Visual update indicator
+function showUpdateIndicator(message) {
+    const indicator = document.createElement('div');
+    indicator.className = 'update-indicator';
+    indicator.innerHTML = `
+        <i class="fas fa-sync-alt"></i>
+        <span>${message}</span>
+    `;
+    
+    indicator.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    document.body.appendChild(indicator);
+    
+    // Animate icon
+    const icon = indicator.querySelector('i');
+    icon.style.animation = 'spin 1s ease-in-out';
+    
+    setTimeout(() => {
+        indicator.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => indicator.remove(), 300);
+    }, 3000);
+}
+
+// Enhanced loadProducts with real-time support
+async function loadProductsWithRealtime() {
+    try {
+        console.log('🔄 Loading products with real-time sync...');
+        
+        // Show loading state
+        document.querySelectorAll('.menu-grid').forEach(grid => {
+            if (grid.querySelectorAll('.menu-item').length === 0) {
+                grid.innerHTML = '<div class="loading-placeholder"><div class="loading-spinner"></div><p>Loading products...</p></div>';
+            }
+        });
+
+        // Initial fetch
+        const products = await window.realtimeSync.fetchData('products');
+        
+        if (products && products.length > 0) {
+            console.log(`✅ Loaded ${products.length} products`);
+            organizeAndDisplayProducts(products, 'http://127.0.0.1:8000');
+            
+            // Start real-time sync
+            initRealtimeProductSync();
+            
+            // Show success
+            showBackendWarning(`✅ ${products.length} products loaded. Live updates enabled!`);
+        } else {
+            showBackendWarning('⚠️ No products found. Add products via Django Admin to see them here.');
+        }
+        
+        // Re-trigger animations
+        setTimeout(handleScrollAnimations, 100);
+        
+    } catch (error) {
+        console.error('❌ Error loading products:', error);
+        showBackendWarning('⚠️ Could not connect to Django server. Make sure it\'s running.');
+    }
+}
+
+// Add CSS for animations
+const realtimeStyles = document.createElement('style');
+realtimeStyles.textContent = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .product-updated {
+        animation: highlightProduct 1s ease;
+    }
+    
+    @keyframes highlightProduct {
+        0%, 100% { transform: scale(1); box-shadow: 0 5px 25px rgba(101, 67, 33, 0.08); }
+        50% { transform: scale(1.02); box-shadow: 0 10px 40px rgba(76, 175, 80, 0.3); }
+    }
+`;
+document.head.appendChild(realtimeStyles);
+
+// Replace the original initialization
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        loadProductsWithRealtime();
+    }, 500);
+});
+
+// Alternative: Manual refresh button
+function addManualRefreshButton() {
+    const refreshBtn = document.createElement('button');
+    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Products';
+    refreshBtn.className = 'manual-refresh-btn';
+    refreshBtn.style.cssText = `
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #654321, #8B4513);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(101, 67, 33, 0.3);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+    `;
+    
+    refreshBtn.onmouseover = () => {
+        refreshBtn.style.transform = 'translateY(-3px)';
+        refreshBtn.style.boxShadow = '0 6px 20px rgba(101, 67, 33, 0.4)';
+    };
+    
+    refreshBtn.onmouseout = () => {
+        refreshBtn.style.transform = 'translateY(0)';
+        refreshBtn.style.boxShadow = '0 4px 12px rgba(101, 67, 33, 0.3)';
+    };
+    
+    refreshBtn.onclick = async () => {
+        const icon = refreshBtn.querySelector('i');
+        icon.style.animation = 'spin 1s linear';
+        refreshBtn.disabled = true;
+        
+        await loadProductsWithRealtime();
+        
+        setTimeout(() => {
+            icon.style.animation = '';
+            refreshBtn.disabled = false;
+        }, 1000);
+    };
+    
+    document.body.appendChild(refreshBtn);
+}
+
+// Add refresh button on load
+window.addEventListener('load', () => {
+    addManualRefreshButton();
+});
+
+console.log('✅ Real-time product sync initialized for Menu page');
+
+
 // New helper function to organize products by category
 function organizeAndDisplayProducts(products, baseUrl) {
     // Clear existing category sections but keep fallback content
@@ -1482,16 +1274,8 @@ function organizeAndDisplayProducts(products, baseUrl) {
             if (grid) {
                 // Check if this grid has hardcoded products
                 const existingItems = grid.querySelectorAll('.menu-item');
-                if (existingItems.length > 0) {
-                    // Remove loading placeholder if present
-                    const placeholder = grid.querySelector('.loading-placeholder');
-                    if (placeholder) {
-                        placeholder.remove();
-                    }
-                } else {
-                    // Clear grid to add new products
-                    grid.innerHTML = '';
-                }
+                grid.innerHTML = ''; // ALWAYS clear before re-render
+
             }
         });
         
@@ -1516,10 +1300,17 @@ function organizeAndDisplayProducts(products, baseUrl) {
             
             const grid = document.querySelector(targetSection.selector);
             if (grid) {
-                categoryProducts.forEach(product => {
-                    const productCard = createProductCard(product, baseUrl);
-                    grid.appendChild(productCard);
-                });
+               categoryProducts.forEach(product => {
+
+    // 🚫 Prevent duplicate product cards
+    if (grid.querySelector(`[data-product-id="${product.id}"]`)) {
+        return;
+    }
+
+    const productCard = createProductCard(product, baseUrl);
+    grid.appendChild(productCard);
+});
+
             }
         }
         
@@ -1532,6 +1323,7 @@ function organizeAndDisplayProducts(products, baseUrl) {
 function createProductCard(product, baseUrl) {
     const div = document.createElement('div');
     div.className = 'menu-item fade-in-up';
+    div.dataset.productId = product.id;
     
     // Handle image URL
     let imageUrl = 'Images/placeholder.jpg'; // Default fallback
@@ -1697,7 +1489,6 @@ function startProductAutoRefresh() {
                     const currentProductCount = document.querySelectorAll('.menu-item').length;
                     if (productList.length !== currentProductCount) {
                         console.log(`🆕 Found ${productList.length - currentProductCount} new product(s)`);
-                        loadProducts(); // Reload all products
                     }
                 }
             } catch (error) {
@@ -1711,23 +1502,13 @@ function startProductAutoRefresh() {
 document.addEventListener('DOMContentLoaded', function() {
     // Load products after a short delay
     setTimeout(() => {
-        loadProducts();
+
         startProductAutoRefresh();
     }, 500);
     
     // Update cart display
     if (window.cart) {
         cart.updateDisplay();
-    }
-});
-
-// Fallback initialization
-window.addEventListener('load', function() {
-    if (!window.menuInitialized) {
-        setTimeout(() => {
-            loadProducts();
-        }, 1000);
-        window.menuInitialized = true;
     }
 });
     </script>

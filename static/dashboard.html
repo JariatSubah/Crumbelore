@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <script src="js/auth.js"></script>
-    <script src="js/bookSystem.js"></script>
     <script src="fun.js"></script>
 
     <style>
@@ -1481,11 +1480,183 @@
         </div>
     </div>
     <script>
+   
+   // ========== FUNCTION DEFINITIONS ==========
+// Navigation between sections
+function showSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.content-view').forEach(view => {
+        view.classList.remove('active');
+    });
+    
+    // Show selected section
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.add('active');
+    }
+    
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-menu button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Find and activate the correct button
+    const activeBtn = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+}
+
+// Sync with server function
+async function syncWithServer() {
+    const syncBtn = document.querySelector('.sync-btn');
+    
+    if (!syncBtn) {
+        console.error('Sync button not found');
+        showNotification('Sync button not available', 'warning');
+        return;
+    }
+    
+    const originalText = syncBtn.innerHTML;
+    
+    // Show loading state
+    syncBtn.innerHTML = '<span class="loading"></span> Syncing...';
+    syncBtn.disabled = true;
+    
+    try {
+        // Sync all data
+        await fetchCustomerData();
+        await loadDashboardStats();
+        await loadCurrentReading();
+        await loadRecentOrders();
+        
+        showNotification('Sync completed successfully!', 'success', 2000);
+    } catch (error) {
+        console.error('Sync failed:', error);
+        showNotification('Sync failed - please try again', 'error');
+    } finally {
+        // Restore button
+        setTimeout(() => {
+            syncBtn.innerHTML = originalText;
+            syncBtn.disabled = false;
+        }, 1000);
+    }
+}
+
+// Update reading progress
+function updateReadingProgress(progress) {
+    const progressCircles = document.querySelectorAll('.progress-circle');
+    const progressTexts = document.querySelectorAll('.progress-text');
+    
+    progressCircles.forEach(circle => {
+        const degrees = (progress / 100) * 360;
+        circle.style.background = `conic-gradient(#654321 0deg, #654321 ${degrees}deg, rgba(101, 67, 33, 0.1) ${degrees}deg)`;
+    });
+    
+    progressTexts.forEach(text => {
+        text.textContent = `${progress}%`;
+    });
+    
+    // Also update the label if exists
+    const progressLabel = document.getElementById('progressLabel');
+    if (progressLabel) {
+        const totalPages = 350;
+        const currentPage = Math.round((progress / 100) * totalPages);
+        progressLabel.textContent = `${currentPage} of ${totalPages} pages`;
+    }
+}
+
+// ========== END FUNCTION DEFINITIONS ==========
+
+
+
+
+// Dashboard check - ADD THIS AT THE TOP
+window.onload = function() {
+    if (!sessionStorage.getItem('userToken')) {
+        alert('Not logged in!');
+        window.location.href = 'index.html';
+    }
+};
+// SIMPLE CHECK - Add this at the very beginning
+const token = sessionStorage.getItem('userToken');
+if (!token) {
+    alert('Please login first!');
+    window.location.href = 'index.html';
+}
+        // TEMPORARY: Create authSystem if it doesn't exist
+if (!window.authSystem) {
+    window.authSystem = {
+        isAuthenticated() {
+            return !!sessionStorage.getItem('userToken');
+        },
+        getCurrentUser() {
+            return JSON.parse(sessionStorage.getItem('userData') || 'null');
+        },
+        getUserType() {
+            const user = this.getCurrentUser();
+            return user?.is_staff ? 'admin' : 'customer';
+        },
+        logout() {
+            sessionStorage.clear();
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    };
+}
+     // Django API Configuration
+const DJANGO_API_URL = 'http://127.0.0.1:8000/api';
+const API_URL = DJANGO_API_URL; // Keep compatibility with existing code
+// Check authentication on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const token = getAuthToken();
+    if (!token) {
+        showNotification('Please login to access the dashboard', 'error');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
+        return;
+    }
+    
+     // Get user data
+    const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+    const customerData = JSON.parse(sessionStorage.getItem('customerData') || '{}');
+    
+    // Update UI immediately
+    if (userData) {
+        const userName = userData.first_name || userData.username || 'Customer';
+        document.getElementById('navUserName').textContent = `Welcome, ${userName}`;
+        document.getElementById('sidebarUserName').textContent = userName;
+        document.getElementById('welcomeText').textContent = `Welcome back to your reading sanctuary, ${userName}!`;
+    }
+    
+    if (customerData) {
+        document.getElementById('booksRead').textContent = customerData.books_read || 0;
+        document.getElementById('loyaltyPoints').textContent = (customerData.loyalty_points || 0).toLocaleString();
+        document.getElementById('favoriteGenre').textContent = customerData.favorite_genre || 'Mystery';
+    }
+
+    // Initialize the dashboard
+    setTimeout(() => {
+        initDashboard();
+    }, 100);
+});
+// Store the current user token
+// Store the current user token
+function getAuthToken() {
+    return sessionStorage.getItem('userToken') || localStorage.getItem('userToken');
+}
+
+// Set the current user token
+function setAuthToken(token, remember = false) {
+    if (remember) {
+        localStorage.setItem('userToken', token);
+    }
+    sessionStorage.setItem('userToken', token);
+}
+
        // Localhost configuration
-       const API_BASE_URL = (window.location.hostname === 'localhost' || 
-                      window.location.hostname === '127.0.0.1') 
-    ? 'http://localhost:3000/api' 
-    : '/api';
+       window.API_BASE_URL = window.API_BASE_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8000/api' : '/api');
 
         // User data storage
         let userData = {
@@ -1579,50 +1750,56 @@
         }
     
         // Fixed syncWithServer function
-        function syncWithServer() {
-            const syncBtn = document.querySelector('.sync-btn');
-            
-            if (!syncBtn) {
-                console.error('Sync button not found');
-                showNotification('Sync button not available', 'warning');
-                return;
-            }
-            
-            const originalText = syncBtn.innerHTML;
-            
-            // Show loading state
-            syncBtn.innerHTML = '<span class="loading"></span> Syncing...';
-            syncBtn.disabled = true;
-            
-            // Perform sync
-            loadUserData().then(() => {
-                // Restore button after sync
-                setTimeout(() => {
-                    syncBtn.innerHTML = originalText;
-                    syncBtn.disabled = false;
-                    showNotification('Sync completed!', 'success');
-                }, 1500);
-            }).catch(error => {
-                console.error('Sync failed:', error);
-                setTimeout(() => {
-                    syncBtn.innerHTML = originalText;
-                    syncBtn.disabled = false;
-                    showNotification('Sync failed - using cached data', 'warning');
-                }, 1500);
-            });
-        }
+        // Fixed syncWithServer function
+async function syncWithServer() {
+    const syncBtn = document.querySelector('.sync-btn');
+    
+    if (!syncBtn) {
+        console.error('Sync button not found');
+        showNotification('Sync button not available', 'warning');
+        return;
+    }
+    
+    const originalText = syncBtn.innerHTML;
+    
+    // Show loading state
+    syncBtn.innerHTML = '<span class="loading"></span> Syncing...';
+    syncBtn.disabled = true;
+    
+    try {
+        // Sync all data
+        await fetchCustomerData();
+        await loadDashboardStats();
+        await loadCurrentReading();
+        await loadRecentOrders();
+        
+        showNotification('Sync completed successfully!', 'success', 2000);
+    } catch (error) {
+        console.error('Sync failed:', error);
+        showNotification('Sync failed - please try again', 'error');
+    } finally {
+        // Restore button
+        setTimeout(() => {
+            syncBtn.innerHTML = originalText;
+            syncBtn.disabled = false;
+        }, 1000);
+    }
+}
 
         // Update connection status
-        function updateConnectionStatus(connected) {
-            const statusElement = document.getElementById('connectionStatus');
-            if (connected) {
-                statusElement.className = 'connection-status online';
-                statusElement.innerHTML = '<i class="fas fa-wifi"></i> Connected to localhost:3000';
-            } else {
-                statusElement.className = 'connection-status offline';
-                statusElement.innerHTML = '<i class="fas fa-wifi"></i> Server offline - using cached data';
-            }
-        }
+        // Update connection status
+function updateConnectionStatus(connected) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (!statusElement) return;
+    
+    if (connected) {
+        statusElement.className = 'connection-status online';
+        statusElement.innerHTML = '<i class="fas fa-wifi"></i> Connected to Django API';
+    } else {
+        statusElement.className = 'connection-status offline';
+        statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> Using cached data';
+    }
+}
 
         // Enhanced connection status with retry logic
         async function attemptServerConnection() {
@@ -1743,140 +1920,161 @@
         }
 
         // Fixed setDefaultUserData function
-        function setDefaultUserData() {
-            // Get user data from auth system first
-            const currentUser = window.authSystem ? window.authSystem.getCurrentUser() : null;
-            
-            if (currentUser) {
-                userData.name = currentUser.name || userData.name || 'Customer User';
-                userData.email = currentUser.email || userData.email || 'customer@crumbelore.com';
-                userData.booksRead = currentUser.booksRead || parseInt(localStorage.getItem('userBooksRead')) || 47;
-                userData.loyaltyPoints = currentUser.loyaltyPoints || parseInt(localStorage.getItem('userLoyaltyPoints')) || 2340;
-                userData.favoriteGenre = currentUser.favoriteGenre || localStorage.getItem('userFavoriteGenre') || 'Mystery';
-            } else {
-                // Fallback to stored data or defaults
-                userData.booksRead = parseInt(localStorage.getItem('userBooksRead')) || 47;
-                userData.loyaltyPoints = parseInt(localStorage.getItem('userLoyaltyPoints')) || 2340;
-                userData.favoriteGenre = localStorage.getItem('userFavoriteGenre') || 'Mystery';
-                userData.name = localStorage.getItem('userName') || 'Customer User';
-                userData.email = localStorage.getItem('userEmail') || 'customer@crumbelore.com';
-            }
-            
-            // Store the data for next time
-            localStorage.setItem('userBooksRead', userData.booksRead.toString());
-            localStorage.setItem('userLoyaltyPoints', userData.loyaltyPoints.toString());
-            localStorage.setItem('userFavoriteGenre', userData.favoriteGenre);
-            localStorage.setItem('userName', userData.name);
-            localStorage.setItem('userEmail', userData.email);
+       // Fixed setDefaultUserData function
+function setDefaultUserData() {
+    // Try to get user data from session/local storage first
+    const storedUser = sessionStorage.getItem('userData') || localStorage.getItem('userData');
+    
+    if (storedUser) {
+        try {
+            const user = JSON.parse(storedUser);
+            userData.name = user.first_name || user.username || 'Customer User';
+            userData.email = user.email || 'customer@crumbelore.com';
+            userData.booksRead = parseInt(localStorage.getItem('userBooksRead')) || 47;
+            userData.loyaltyPoints = parseInt(localStorage.getItem('userLoyaltyPoints')) || 2340;
+            userData.favoriteGenre = localStorage.getItem('userFavoriteGenre') || 'Mystery';
+        } catch (error) {
+            console.error('Error parsing stored user data:', error);
+            setFallbackData();
         }
+    } else {
+        setFallbackData();
+    }
+    
+    // Store the data for next time
+    localStorage.setItem('userBooksRead', userData.booksRead.toString());
+    localStorage.setItem('userLoyaltyPoints', userData.loyaltyPoints.toString());
+    localStorage.setItem('userFavoriteGenre', userData.favoriteGenre);
+}
+
+function setFallbackData() {
+    userData.name = 'Customer User';
+    userData.email = 'customer@crumbelore.com';
+    userData.booksRead = 47;
+    userData.loyaltyPoints = 2340;
+    userData.favoriteGenre = 'Mystery';
+}
 
         // Load dashboard statistics
-        async function loadDashboardStats() {
-            const stats = await makeAPIRequest('/user/dashboard-stats');
+       // Load dashboard statistics from Django
+async function loadDashboardStats() {
+    const token = getAuthToken();
+    if (!token) {
+        console.log('No token for stats');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${DJANGO_API_URL}/customer/stats/`, {
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
             
-            if (stats) {
-                document.getElementById('monthlyBooks').textContent = stats.monthlyBooks || 4;
-                document.getElementById('monthlyBooksDesc').textContent = `${stats.monthlyIncrease || 2} more than last month!`;
+            if (data.success) {
+                // Update stats cards with real data
+                document.getElementById('monthlyBooks').textContent = data.stats.books_this_month || 4;
+                document.getElementById('monthlyBooksDesc').textContent = 
+                    data.stats.books_increase ? `${data.stats.books_increase} more than last month!` : '2 more than last month!';
                 
-                document.getElementById('coffeeOrders').textContent = stats.coffeeOrders || 23;
-                document.getElementById('coffeeOrdersDesc').textContent = `Your favorite: ${stats.favoriteCoffee || 'Vanilla Dream Latte'}`;
+                document.getElementById('coffeeOrders').textContent = data.stats.total_orders || 23;
+                document.getElementById('coffeeOrdersDesc').textContent = 
+                    data.stats.favorite_item ? `Your favorite: ${data.stats.favorite_item}` : 'Your favorite: Vanilla Dream Latte';
                 
-                document.getElementById('bookClubEvents').textContent = stats.bookClubEvents || 8;
-                document.getElementById('bookClubDesc').textContent = `Next: ${stats.nextEvent || 'Mystery Night - Friday 7PM'}`;
-            } else {
-                // Default values when server is offline
-                document.getElementById('monthlyBooks').textContent = '4';
-                document.getElementById('monthlyBooksDesc').textContent = '2 more than last month!';
-                
-                document.getElementById('coffeeOrders').textContent = '23';
-                document.getElementById('coffeeOrdersDesc').textContent = 'Your favorite: Vanilla Dream Latte';
-                
-                document.getElementById('bookClubEvents').textContent = '8';
-                document.getElementById('bookClubDesc').textContent = 'Next: Mystery Night - Friday 7PM';
+                document.getElementById('bookClubEvents').textContent = data.stats.events_attended || 8;
+                document.getElementById('bookClubDesc').textContent = 
+                    data.stats.next_event ? `Next: ${data.stats.next_event}` : 'Next: Mystery Night - Friday 7PM';
             }
         }
+    } catch (error) {
+        console.log('Error loading stats:', error);
+        // Keep default values
+    }
+}
 
         // Load current reading from server
-        async function loadCurrentReading() {
-            const currentReading = await makeAPIRequest('/user/current-reading');
+        // Load current reading from Django
+async function loadCurrentReading() {
+    const token = getAuthToken();
+    if (!token) return;
+    
+    try {
+        const response = await fetch(`${DJANGO_API_URL}/customer/current-reading/`, {
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
             
-            if (currentReading && currentReading.book) {
-                const book = currentReading.book;
+            if (data.success && data.book) {
+                const book = data.book;
                 userData.currentBook = book;
                 
-                document.getElementById('currentBookTitle').textContent = book.title;
-                document.getElementById('currentBookAuthor').textContent = `by ${book.author}`;
-                document.getElementById('currentBookGenre').textContent = book.genre;
-                document.getElementById('currentBookDescription').textContent = book.description;
-                
-                updateReadingProgress(currentReading.progress || 70);
-                
-                // Update book icon based on genre
-                const iconMap = {
-                    'Mystery': 'fas fa-search',
-                    'Romance': 'fas fa-heart',
-                    'Sci-Fi': 'fas fa-rocket',
-                    'Fantasy': 'fas fa-magic'
-                };
-                document.getElementById('currentBookIcon').className = iconMap[book.genre] || 'fas fa-book';
-            } else {
-                // Default book when server is offline
-                document.getElementById('currentBookTitle').textContent = 'The Silent Patient';
-                document.getElementById('currentBookAuthor').textContent = 'by Alex Michaelides';
-                document.getElementById('currentBookGenre').textContent = 'Psychological Thriller';
-                document.getElementById('currentBookDescription').textContent = 'A gripping psychological thriller about a woman\'s act of violence against her husband.';
-                document.getElementById('currentBookIcon').className = 'fas fa-search';
-                updateReadingProgress(70);
+                // Update current reading section
+                const currentReadingSection = document.querySelector('.current-reading');
+                if (currentReadingSection) {
+                    const bookTitle = currentReadingSection.querySelector('.book-info h3');
+                    const bookAuthor = currentReadingSection.querySelector('.book-info .author');
+                    const bookDescription = currentReadingSection.querySelector('.book-info p');
+                    
+                    if (bookTitle) bookTitle.textContent = book.title;
+                    if (bookAuthor) bookAuthor.textContent = `by ${book.author}`;
+                    if (bookDescription) bookDescription.textContent = book.description || 'No description available';
+                    
+                    // Update progress
+                    const progress = book.progress || 70;
+                    updateReadingProgress(progress);
+                }
             }
         }
+    } catch (error) {
+        console.log('Error loading current reading:', error);
+    }
+}
 
         // Load recent orders from server
-        async function loadRecentOrders() {
-            const orders = await makeAPIRequest('/user/recent-orders');
-            const ordersList = document.getElementById('ordersList');
+       // Load recent orders from Django
+async function loadRecentOrders() {
+    const token = getAuthToken();
+    if (!token) return;
+    
+    try {
+        const response = await fetch(`${DJANGO_API_URL}/customer/orders/`, {
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
             
-            if (orders && orders.length > 0) {
-                ordersList.innerHTML = '';
-                orders.forEach(order => {
-                    const orderElement = createOrderElement(order);
-                    ordersList.appendChild(orderElement);
-                });
-            } else {
-                // Default orders when server is offline
-                const defaultOrders = [
-                    {
-                        id: 'ORD-001',
-                        items: 'Mystery Solver\'s Kit',
-                        description: 'Classic Espresso + Dark Chocolate Tart + Book',
-                        time: 'Today, 2:30 PM',
-                        status: 'completed',
-                        price: 580
-                    },
-                    {
-                        id: 'ORD-002',
-                        items: 'Vanilla Dream Latte',
-                        description: 'Large size with extra foam',
-                        time: 'Yesterday, 4:15 PM',
-                        status: 'completed',
-                        price: 280
-                    },
-                    {
-                        id: 'ORD-003',
-                        items: 'Romance Reader\'s Delight',
-                        description: 'Vanilla Latte + Red Velvet + Romance Novel',
-                        time: 'Dec 13, 3:20 PM',
-                        status: 'completed',
-                        price: 650
-                    }
-                ];
-                
-                ordersList.innerHTML = '';
-                defaultOrders.forEach(order => {
-                    const orderElement = createOrderElement(order);
-                    ordersList.appendChild(orderElement);
-                });
+            if (data.success && data.orders) {
+                const ordersList = document.querySelector('.recent-orders .order-item-container');
+                if (ordersList) {
+                    // Clear existing orders
+                    const existingOrders = ordersList.querySelectorAll('.order-item:not(:first-child)');
+                    existingOrders.forEach(order => order.remove());
+                    
+                    // Add new orders
+                    data.orders.forEach(order => {
+                        const orderElement = createOrderElement(order);
+                        ordersList.appendChild(orderElement);
+                    });
+                }
             }
         }
+    } catch (error) {
+        console.log('Error loading orders:', error);
+    }
+}
 
         // Create order element
         function createOrderElement(order) {
@@ -1906,23 +2104,27 @@
         }
 
         // Update reading progress
-        function updateReadingProgress(progress) {
-            const progressText = document.getElementById('progressText');
-            const progressLabel = document.getElementById('progressLabel');
-            const progressGoal = document.getElementById('progressGoal');
-            const progressCircle = document.getElementById('progressCircle');
-            
-            const totalPages = 350;
-            const currentPage = Math.round((progress / 100) * totalPages);
-            
-            progressText.textContent = `${progress}%`;
-            progressLabel.textContent = `${currentPage} of ${totalPages} pages`;
-            progressGoal.textContent = `3 days to finish goal`;
-            
-            // Update progress circle
-            const degrees = (progress / 100) * 360;
-            progressCircle.style.background = `conic-gradient(#654321 0deg, #654321 ${degrees}deg, rgba(101, 67, 33, 0.1) ${degrees}deg)`;
-        }
+function updateReadingProgress(progress) {
+    const progressCircles = document.querySelectorAll('.progress-circle');
+    const progressTexts = document.querySelectorAll('.progress-text');
+    
+    progressCircles.forEach(circle => {
+        const degrees = (progress / 100) * 360;
+        circle.style.background = `conic-gradient(#654321 0deg, #654321 ${degrees}deg, rgba(101, 67, 33, 0.1) ${degrees}deg)`;
+    });
+    
+    progressTexts.forEach(text => {
+        text.textContent = `${progress}%`;
+    });
+    
+    // Also update the label if exists
+    const progressLabel = document.getElementById('progressLabel');
+    if (progressLabel) {
+        const totalPages = 350;
+        const currentPage = Math.round((progress / 100) * totalPages);
+        progressLabel.textContent = `${currentPage} of ${totalPages} pages`;
+    }
+}
 
         // Update user interface
         function updateUserInterface() {
@@ -1937,13 +2139,24 @@
         }
 
         // Logout function
-        function logout() {
-            if (window.authSystem) {
-                window.authSystem.logout();
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
+        // Enhanced logout function
+function logout() {
+    // Clear Django tokens
+    sessionStorage.removeItem('userToken');
+    localStorage.removeItem('userToken');
+    sessionStorage.removeItem('userData');
+    
+    // Clear all user data
+    localStorage.removeItem('userBooksRead');
+    localStorage.removeItem('userLoyaltyPoints');
+    localStorage.removeItem('userFavoriteGenre');
+    
+    // Redirect to home page
+    showNotification('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1500);
+}
 
         // Enhanced notification system with duration control
         function showNotification(message, type = 'info', duration = 4000) {
@@ -2006,29 +2219,135 @@
         }
 
         // Fixed initDashboard function
-        function initDashboard() {
-            // Set initial UI data
-            setDefaultUserData();
+        // Fixed initDashboard function
+async function initDashboard() {
+    console.log('Initializing dashboard...');
+    
+    // First check authentication
+    const token = getAuthToken();
+    if (!token) {
+        showNotification('Please login first!', 'error');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+    }
+    
+    // Set initial UI data from session storage first
+    const storedUser = sessionStorage.getItem('userData') || localStorage.getItem('userData');
+    if (storedUser) {
+        try {
+            const user = JSON.parse(storedUser);
+            userData.name = user.first_name || user.username || 'Customer User';
+            userData.email = user.email || 'customer@crumbelore.com';
             updateUserInterface();
-            updateConnectionStatus(false);
-            
-            showNotification('Loading dashboard...', 'info', 2000);
-            
-            // Try to load data from server
-            loadUserData();
-            
-            // Auto-sync every 2 minutes if connected
-            setInterval(() => {
-                if (isServerConnected && !document.hidden) {
-                    // Only sync if sync button exists
-                    const syncBtn = document.querySelector('.sync-btn');
-                    if (syncBtn) {
-                        loadUserData(); // Just load data, don't show sync UI
-                    }
-                }
-            }, 120000);
+        } catch (error) {
+            console.error('Error parsing stored user data:', error);
         }
-
+    }
+    
+    // Try to fetch real data from Django
+    const hasRealData = await fetchCustomerData();
+    
+    if (!hasRealData) {
+        // Use demo data as fallback
+        setDefaultUserData();
+        updateUserInterface();
+        showNotification('Connected in demo mode - using cached data', 'info');
+    }
+    
+    updateConnectionStatus(hasRealData);
+    
+    // Load additional data
+    await loadDashboardStats();
+    await loadCurrentReading();
+    await loadRecentOrders();
+    
+    // Auto-sync every 2 minutes if connected
+    setInterval(() => {
+        if (hasRealData && !document.hidden) {
+            fetchCustomerData().then(updated => {
+                if (updated) {
+                    console.log('Auto-sync completed');
+                }
+            });
+        }
+    }, 120000);
+    
+    // Initialize animations
+    handleScrollAnimations();
+}
+    // Fetch real customer data from Django API
+async function fetchCustomerData() {
+    console.log('Fetching customer data from Django...');
+    
+    const token = getAuthToken();
+    if (!token) {
+        console.log('No auth token available');
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`${DJANGO_API_URL}/customer/dashboard/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+        
+        console.log('Dashboard response status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Dashboard data received:', data);
+            
+            if (data.success) {
+                // Update dashboard with real data
+                userData.booksRead = data.customer.books_read || 0;
+                userData.loyaltyPoints = data.customer.loyalty_points || 100;
+                userData.favoriteGenre = data.customer.favorite_genre || 'Mystery';
+                
+                // Update UI elements
+                document.getElementById('booksRead').textContent = userData.booksRead;
+                document.getElementById('loyaltyPoints').textContent = userData.loyaltyPoints.toLocaleString();
+                document.getElementById('favoriteGenre').textContent = userData.favoriteGenre;
+                
+                // Update user info
+                const currentUser = JSON.parse(sessionStorage.getItem('userData') || localStorage.getItem('userData') || '{}');
+                if (currentUser) {
+                    const userName = currentUser.first_name || currentUser.username || 'Customer User';
+                    document.getElementById('navUserName').textContent = `Welcome, ${userName}`;
+                    document.getElementById('sidebarUserName').textContent = userName;
+                    document.getElementById('welcomeText').textContent = `Welcome back to your reading sanctuary, ${userName}!`;
+                }
+                
+                // Store updated data
+                localStorage.setItem('userBooksRead', userData.booksRead.toString());
+                localStorage.setItem('userLoyaltyPoints', userData.loyaltyPoints.toString());
+                localStorage.setItem('userFavoriteGenre', userData.favoriteGenre);
+                
+                console.log('Real data loaded successfully');
+                return true;
+            } else {
+                console.log('API returned success: false', data);
+                return false;
+            }
+        } else if (response.status === 401) {
+            // Token expired or invalid
+            console.log('Authentication failed, redirecting to login');
+            showNotification('Session expired. Please login again.', 'error');
+            setTimeout(() => window.location.href = 'index.html', 2000);
+            return false;
+        } else {
+            console.log('API request failed with status:', response.status);
+            return false;
+        }
+        
+    } catch (error) {
+        console.log('Error fetching customer data:', error);
+        return false;
+    }
+}
         // Handle scroll animations
         function handleScrollAnimations() {
             const elements = document.querySelectorAll('.fade-in-up');

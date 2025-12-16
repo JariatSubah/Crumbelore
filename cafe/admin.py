@@ -15,11 +15,23 @@ class CartItemInline(admin.TabularInline):
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
-    readonly_fields = ('get_subtotal',)
+    readonly_fields = ('get_subtotal_display',)
     
-    def get_subtotal(self, obj):
-        return f"৳{obj.get_subtotal()}"
-    get_subtotal.short_description = 'Subtotal'
+    def get_subtotal_display(self, obj):
+        # Handle cases where obj is None or has None values
+        if obj is None or obj.pk is None:
+            return "৳0.00"
+        
+        # Check if quantity or price is None before multiplication
+        if obj.quantity is None or obj.price is None:
+            return "৳0.00"
+        
+        try:
+            return f"৳{obj.get_subtotal()}"
+        except (TypeError, ValueError):
+            return "৳0.00"
+    
+    get_subtotal_display.short_description = 'Subtotal'
 
 class CustomerInline(admin.StackedInline):
     model = Customer

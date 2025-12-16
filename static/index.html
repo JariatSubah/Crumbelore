@@ -791,7 +791,7 @@
             </div>
         </div>
     </section>
-
+    
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
         <div class="container">
@@ -921,40 +921,58 @@
         }
 
         // Customer login function with working authentication
-        async function customerLogin(event) {
+async function customerLogin(event) {
     event.preventDefault();
     
     const email = document.getElementById('customer-email').value;
     const password = document.getElementById('customer-password').value;
     const button = event.target.querySelector('.login-btn');
     
-    button.classList.add('loading');
-    button.innerHTML = '<span class="loading"></span> Signing in...';
     button.disabled = true;
+    button.innerHTML = 'Logging in...';
     
     try {
-        const response = await fetch(`${API_URL}/auth/login/`, {
+        const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: email, password: password })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: email, password: password})
         });
+        
         const data = await response.json();
-
-        if (data.success) {
-            showNotification('Login successful! Redirecting...', 'success');
-            setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        console.log('Login response:', data);
+        
+        if (data.success && data.token) {
+            // Store token
+            sessionStorage.setItem('userToken', data.token);
+            
+            // IMMEDIATE REDIRECT - NO DELAY
+            window.location.replace('dashboard.html');
+            return false; // Important!
         } else {
-            showNotification(data.error || 'Login failed', 'error');
+            alert('Login failed: ' + (data.error || 'Check credentials'));
+            button.innerHTML = 'Sign In';
+            button.disabled = false;
         }
+        
     } catch (error) {
-        showNotification('Server connection error', 'error');
-    } finally {
-        button.classList.remove('loading');
+        alert('Server error. Make sure Django is running!');
         button.innerHTML = 'Sign In';
         button.disabled = false;
     }
+    
+    return false; // Prevent form submission
 }
 
+function resetButton(button, text) {
+    button.innerHTML = text;
+    button.disabled = false;
+}
+
+function resetLoginButton(button, text) {
+    button.classList.remove('loading');
+    button.innerHTML = text;
+    button.disabled = false;
+}
 
         // Admin login function
         async function adminLogin(event) {
@@ -1001,25 +1019,309 @@
         }
 
         // Show signup form (placeholder)
-        function showSignupForm() {
-            showNotification('Signup form coming soon! For now, use: customer@crumbelore.com / customer123', 'info');
-        }
+        // Show signup form (replace the placeholder function)
+function showSignupForm() {
+    // Create signup modal
+    const modalHTML = `
+        <div id="signupModal" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        ">
+            <div style="
+                background: #FEFDF8;
+                border-radius: 25px;
+                padding: 3rem;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(101, 67, 33, 0.3);
+                border: 2px solid #654321;
+                position: relative;
+            ">
+                <button onclick="closeSignupModal()" style="
+                    position: absolute;
+                    top: 1.5rem;
+                    right: 1.5rem;
+                    background: none;
+                    border: none;
+                    font-size: 1.5rem;
+                    color: #654321;
+                    cursor: pointer;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s ease;
+                ">&times;</button>
+                
+                <h3 style="
+                    font-family: 'Playfair Display', serif;
+                    font-size: 2.2rem;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    color: #654321;
+                    font-weight: 500;
+                ">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </h3>
+                
+                <form id="customerSignupForm" onsubmit="customerSignup(event)" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label style="margin-bottom: 0.8rem; font-weight: 500; color: #654321; font-size: 1.1rem;">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your full name" required style="
+                            padding: 1rem;
+                            border: 2px solid rgba(101, 67, 33, 0.2);
+                            border-radius: 12px;
+                            background: rgba(255, 255, 255, 0.9);
+                            color: #654321;
+                            font-size: 1rem;
+                            transition: all 0.3s ease;
+                        ">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <label style="margin-bottom: 0.8rem; font-weight: 500; color: #654321; font-size: 1.1rem;">Email Address</label>
+                        <input type="email" id="signup-email" placeholder="your@email.com" required style="
+                            padding: 1rem;
+                            border: 2px solid rgba(101, 67, 33, 0.2);
+                            border-radius: 12px;
+                            background: rgba(255, 255, 255, 0.9);
+                            color: #654321;
+                            font-size: 1rem;
+                            transition: all 0.3s ease;
+                        ">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <label style="margin-bottom: 0.8rem; font-weight: 500; color: #654321; font-size: 1.1rem;">Phone Number</label>
+                        <input type="tel" id="signup-phone" placeholder="+880 123 456 7890" style="
+                            padding: 1rem;
+                            border: 2px solid rgba(101, 67, 33, 0.2);
+                            border-radius: 12px;
+                            background: rgba(255, 255, 255, 0.9);
+                            color: #654321;
+                            font-size: 1rem;
+                            transition: all 0.3s ease;
+                        ">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <label style="margin-bottom: 0.8rem; font-weight: 500; color: #654321; font-size: 1.1rem;">Password</label>
+                        <input type="password" id="signup-password" placeholder="At least 6 characters" required style="
+                            padding: 1rem;
+                            border: 2px solid rgba(101, 67, 33, 0.2);
+                            border-radius: 12px;
+                            background: rgba(255, 255, 255, 0.9);
+                            color: #654321;
+                            font-size: 1rem;
+                            transition: all 0.3s ease;
+                        ">
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <label style="margin-bottom: 0.8rem; font-weight: 500; color: #654321; font-size: 1.1rem;">Confirm Password</label>
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password" required style="
+                            padding: 1rem;
+                            border: 2px solid rgba(101, 67, 33, 0.2);
+                            border-radius: 12px;
+                            background: rgba(255, 255, 255, 0.9);
+                            color: #654321;
+                            font-size: 1rem;
+                            transition: all 0.3s ease;
+                        ">
+                    </div>
+                    
+                    <button type="submit" class="login-btn" style="
+                        background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+                        color: white;
+                        border: none;
+                        padding: 1.2rem;
+                        border-radius: 12px;
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        margin-top: 1rem;
+                    ">Create Account</button>
+                </form>
+                
+                <div style="text-align: center; margin-top: 1.5rem; font-size: 0.95rem; color: #8B4513;">
+                    Already have an account? <a href="#" onclick="closeSignupModal()" style="color: #654321; text-decoration: none; font-weight: 600;">Sign in instead</a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
 
+// Close signup modal
+function closeSignupModal() {
+    const modal = document.getElementById('signupModal');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.remove();
+        }, 300);
+    }
+}
+         // Customer Signup Function for Django API
+async function customerSignup(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const phone = document.getElementById('signup-phone').value;
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('signup-confirm').value;
+    
+    const button = event.target.querySelector('.login-btn');
+    
+    // Validation
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match!', 'error');
+        return;
+    }
+    
+    if (password.length < 6) {
+        showNotification('Password must be at least 6 characters', 'error');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    button.classList.add('loading');
+    button.innerHTML = '<span class="loading"></span> Creating account...';
+    button.disabled = true;
+    
+    try {
+        // Send to Django API
+        const response = await fetch(`${API_URL}/auth/register/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: email,
+                email: email,
+                password: password,
+                first_name: name.split(' ')[0] || '',
+                last_name: name.split(' ').slice(1).join(' ') || '',
+                phone: phone || '',
+                city: 'Chattogram'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showNotification('Account created successfully! Logging you in...', 'success');
+            
+            // Close signup modal
+            closeSignupModal();
+            
+            // Auto login after registration
+            setTimeout(async () => {
+                try {
+                    const loginResponse = await fetch(`${API_URL}/auth/login/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            username: email, 
+                            password: password 
+                        })
+                    });
+                    
+                    const loginData = await loginResponse.json();
+                    
+                    if (loginData.success) {
+                        // Store user token
+                        sessionStorage.setItem('userToken', loginData.token);
+                        sessionStorage.setItem('userData', JSON.stringify(loginData.user));
+                        
+                        showNotification('Login successful! Redirecting...', 'success');
+                        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+                    } else {
+                        showNotification('Auto-login failed. Please login manually.', 'warning');
+                    }
+                } catch (loginError) {
+                    console.error('Auto-login error:', loginError);
+                    showNotification('Please login manually with your new credentials', 'info');
+                }
+            }, 1500);
+            
+        } else {
+            // Handle errors from Django
+            let errorMsg = 'Registration failed. Please try again.';
+            
+            if (data.errors) {
+                if (typeof data.errors === 'object') {
+                    errorMsg = Object.values(data.errors).flat().join(', ');
+                } else if (Array.isArray(data.errors)) {
+                    errorMsg = data.errors.join(', ');
+                }
+            } else if (data.error) {
+                errorMsg = data.error;
+            } else if (data.message) {
+                errorMsg = data.message;
+            }
+            
+            showNotification(errorMsg, 'error');
+            
+            // Reset button
+            button.classList.remove('loading');
+            button.innerHTML = 'Create Account';
+            button.disabled = false;
+        }
+        
+    } catch (error) {
+        console.error('Registration error:', error);
+        showNotification('Registration failed. Please check your connection and try again.', 'error');
+        
+        // Reset button
+        button.classList.remove('loading');
+        button.innerHTML = 'Create Account';
+        button.disabled = false;
+    }
+}
         // Handle navigation clicks
         document.addEventListener('DOMContentLoaded', function() {
             // Handle smooth scroll for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
+            // Handle smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        
+        // Only handle internal anchor links (starting with #)
+        if (href && href.startsWith('#') && href !== '#') {
+            e.preventDefault();
+            const targetId = href.substring(1); // Remove the #
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
-            });
+            }
+        }
+        // Let normal links work as usual
+    });
+});
 
             // Handle navigation to other pages
             document.querySelectorAll('.nav-links a').forEach(link => {

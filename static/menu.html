@@ -740,122 +740,382 @@
     <script>
 
          //cart system
-        class SimpleCart {
-            constructor() {
-                this.items = this.loadCart();
+        // cart-system.js - Enhanced cart that syncs with Django backend
+class DjangoCart {
+    constructor() {
+        this.token = localStorage.getItem('auth_token');
+        this.isAuthenticated = !!this.token;
+        this.userId = localStorage.getItem('user_id');
+        this.cartId = localStorage.getItem('cart_id');
+        
+        // Initialize with local storage as fallback
+        this.localCart = this.loadLocalCart();
+        this.initializeCart();
+    }
+
+    // Load cart from localStorage (fallback)
+    loadLocalCart() {
+        try {
+            const saved = localStorage.getItem('local_cart');
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    // Save to localStorage (fallback)
+    saveLocalCart() {
+        localStorage.setItem('local_cart', JSON.stringify(this.localCart));
+    }
+
+    // Initialize or get cart from Django
+    async initializeCart() {
+        if (!this.isAuthenticated) {
+            console.log('⚠️ User not authenticated, using local cart');
+            this.updateDisplay();
+            return;
+        }
+
+        try {
+            // Try to get existing cart from Django
+            const response = await fetch(`${API_BASE_URL}/cart/`, {
+                headers: {
+                    'Authorization': `Token ${this.token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    this.cartId = data[0].id;
+                    localStorage.setItem('cart_id', this.cartId);
+                    
+                    // Get cart items
+                    await this.syncWithBackend();
+                } else {
+                    // Create new cart in Django
+                    await this.createBackendCart();
+                }
+            }
+        } catch (error) {
+            console.error('Error initializing cart:', error);
+        }
+    }
+
+    // Create cart in Django backend
+    async createBackendCart() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/cart/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Token ${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.cartId = data.id;
+                localStorage.setItem('cart_id', this.cartId);
+                
+                // Sync local cart items to backend
+                await this.syncLocalToBackend();
+            }
+        } catch (error) {
+            console.error('Error creating backend cart:', error);
+        }
+    }
+
+    // Add item to cart (main method)
+    async addItem(productId, productName, price) {
+        if (!this.isAuthenticated) {
+            // Use local storage if not logged in
+            this.addToLocalCart(productName, price);
+            return;
+        }
+
+        try {
+            // Add to Django backend
+            const response = await fetch(`${API_BASE_URL}/cart/${this.cartId}/add_item/`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Token ${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product: productId,
+                    quantity: 1
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Item added to backend cart:', data);
+                await this.syncWithBackend();
+                this.showNotification(`${productName} added to cart!`);
+            } else {
+                // Fallback to local storage
+                this.addToLocalCart(productName, price);
+            }
+        } catch (error) {
+            console.error('Error adding to backend cart:', error);
+            this.addToLocalCart(productName, price);
+        }
+    }
+
+    // Add to local cart (fallback)
+    addToLocalCart(name, price) {
+        const existingItem = this.localCart.find(item => item.name === name);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            this.localCart.push({
+                id: Date.now(),
+                name: name,
+                price: parseFloat(price),
+                quantity: 1
+            });
+        }
+        
+        this.saveLocalCart();
+        this.updateDisplay();
+        this.showNotification(`${name} added to local cart!`);
+    }
+
+    // Sync backend cart to frontend
+    async syncWithBackend() {
+        if (!this.isAuthenticated || !this.cartId) return;
+
+        try {
+            // Get cart items from backend
+            const response = await fetch(`${API_BASE_URL}/cart/${this.cartId}/items/`, {
+                headers: {
+                    'Authorization': `Token ${this.token}`
+                }
+            });
+
+            if (response.ok) {
+                const items = await response.json();
+                // Convert backend items to frontend format
+                this.localCart = items.map(item => ({
+                    id: item.id,
+                    name: item.product_name,
+                    price: parseFloat(item.product_price),
+                    quantity: item.quantity
+                }));
+                
+                this.saveLocalCart();
                 this.updateDisplay();
             }
+        } catch (error) {
+            console.error('Error syncing cart:', error);
+        }
+    }
 
-            loadCart() {
-                try {
-                    const saved = localStorage.getItem('cart');
-                    return saved ? JSON.parse(saved) : [];
-                } catch (error) {
-                    console.error('Error loading cart:', error);
-                    return [];
-                }
-            }
+    // Sync local cart to backend
+    async syncLocalToBackend() {
+        if (!this.isAuthenticated || !this.cartId || this.localCart.length === 0) return;
 
-            saveCart() {
-                try {
-                    localStorage.setItem('cart', JSON.stringify(this.items));
-                    this.updateDisplay();
-                } catch (error) {
-                    console.error('Error saving cart:', error);
-                }
-            }
-
-            addItem(name, price) {
-                const existingItem = this.items.find(item => item.name === name);
-                
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    this.items.push({
-                        id: Date.now(),
-                        name: name,
-                        price: parseFloat(price),
-                        quantity: 1
-                    });
-                }
-                
-                this.saveCart();
-                this.showNotification(`${name} added to cart!`);
-            }
-
-            removeItem(itemId) {
-                this.items = this.items.filter(item => item.id !== itemId);
-                this.saveCart();
-            }
-
-            getTotal() {
-                return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            }
-
-            getCount() {
-                return this.items.reduce((sum, item) => sum + item.quantity, 0);
-            }
-
-            updateDisplay() {
-                // Update cart count
-                const countElements = document.querySelectorAll('#cartCount, .cart-count');
-                countElements.forEach(el => {
-                    if (el) el.textContent = this.getCount();
-                });
-
-                // Update cart total
-                const totalElements = document.querySelectorAll('#cartTotal, .cart-total');
-                totalElements.forEach(el => {
-                    if (el) el.textContent = `৳${this.getTotal()}`;
-                });
-
-                // Update cart items display
-                const cartItemsContainer = document.getElementById('cartItems');
-                if (cartItemsContainer) {
-                    if (this.items.length === 0) {
-                        cartItemsContainer.innerHTML = '<p style="color: #8B4513; text-align: center; margin: 2rem 0;">Your cart is empty</p>';
-                    } else {
-                        cartItemsContainer.innerHTML = this.items.map(item => `
-                            <div class="cart-item">
-                                <div>
-                                    <strong style="color: #654321;">${item.name}</strong><br>
-                                    <small style="color: #8B4513;">৳${item.price} x ${item.quantity}</small>
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="color: #654321; font-weight: 600;">৳${item.price * item.quantity}</div>
-                                    <button onclick="cart.removeItem(${item.id})" style="background: none; border: none; color: #8B4513; cursor: pointer; font-size: 0.8rem;">Remove</button>
-                                </div>
-                            </div>
-                        `).join('');
-                    }
-                }
-            }
-
-            showNotification(message) {
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 100px;
-                    right: 2rem;
-                    background: #654321;
-                    color: white;
-                    padding: 1rem 2rem;
-                    border-radius: 10px;
-                    z-index: 3000;
-                    animation: slideIn 0.3s ease;
-                `;
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 3000);
+        for (const item of this.localCart) {
+            // Try to find product ID from your products list
+            const productId = await this.findProductIdByName(item.name);
+            
+            if (productId) {
+                await this.addToBackendCart(productId, item.quantity);
             }
         }
-         // Initialize cart
-        const cart = new SimpleCart();
+        
+        // Clear local cart after syncing
+        this.localCart = [];
+        this.saveLocalCart();
+        await this.syncWithBackend();
+    }
+
+    // Find product ID by name (you'll need to implement this)
+    async findProductIdByName(productName) {
+        // This is a simple implementation - you might want to cache your products
+        try {
+            const response = await fetch(`${API_BASE_URL}/products/`);
+            const products = await response.json();
+            const product = Array.isArray(products) 
+                ? products.find(p => p.name === productName)
+                : products.results?.find(p => p.name === productName);
+            
+            return product ? product.id : null;
+        } catch {
+            return null;
+        }
+    }
+
+    // Remove item from cart
+    async removeItem(itemId) {
+        if (!this.isAuthenticated) {
+            this.removeFromLocalCart(itemId);
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/cart/${this.cartId}/remove_item/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Token ${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ item_id: itemId })
+            });
+
+            if (response.ok) {
+                await this.syncWithBackend();
+                this.showNotification('Item removed from cart');
+            } else {
+                this.removeFromLocalCart(itemId);
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+            this.removeFromLocalCart(itemId);
+        }
+    }
+
+    removeFromLocalCart(itemId) {
+        this.localCart = this.localCart.filter(item => item.id !== itemId);
+        this.saveLocalCart();
+        this.updateDisplay();
+    }
+
+    // Get cart total
+    getTotal() {
+        return this.localCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    // Get item count
+    getCount() {
+        return this.localCart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    // Update display (same as before)
+    updateDisplay() {
+        // Update cart count
+        const countElements = document.querySelectorAll('#cartCount, .cart-count');
+        countElements.forEach(el => {
+            if (el) el.textContent = this.getCount();
+        });
+
+        // Update cart total
+        const totalElements = document.querySelectorAll('#cartTotal, .cart-total');
+        totalElements.forEach(el => {
+            if (el) el.textContent = `৳${this.getTotal().toFixed(2)}`;
+        });
+
+        // Update cart items display
+        const cartItemsContainer = document.getElementById('cartItems');
+        if (cartItemsContainer) {
+            if (this.localCart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="color: #8B4513; text-align: center; margin: 2rem 0;">Your cart is empty</p>';
+            } else {
+                cartItemsContainer.innerHTML = this.localCart.map(item => `
+                    <div class="cart-item" data-item-id="${item.id}">
+                        <div>
+                            <strong style="color: #654321;">${item.name}</strong><br>
+                            <small style="color: #8B4513;">৳${item.price} x ${item.quantity}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: #654321; font-weight: 600;">৳${(item.price * item.quantity).toFixed(2)}</div>
+                            <button onclick="djangoCart.removeItem(${item.id})" style="background: none; border: none; color: #8B4513; cursor: pointer; font-size: 0.8rem;">Remove</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    // Checkout function
+    async checkout() {
+        if (this.localCart.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+
+        if (!this.isAuthenticated) {
+            alert('Please login to checkout');
+            window.location.href = 'login.html'; // You'll need a login page
+            return;
+        }
+
+        // Save cart to localStorage for checkout page
+        localStorage.setItem('checkoutCart', JSON.stringify(this.localCart));
+        localStorage.setItem('cart_total', this.getTotal());
+        
+        window.location.href = 'checkout.html';
+    }
+
+    // Show notification
+    showNotification(message) {
+        // ... same as your existing notification code ...
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: #654321;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+}
+
+// Initialize DjangoCart
+window.djangoCart = new DjangoCart();
+
+// Update your Add to Cart buttons
+function updateAddToCartButtons() {
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.onclick = function() {
+            const productId = this.dataset.productId;
+            const productName = this.dataset.productName;
+            const productPrice = this.dataset.productPrice;
+            
+            if (productId && productName && productPrice) {
+                djangoCart.addItem(productId, productName, productPrice);
+            } else {
+                // Fallback to simple cart
+                window.cart.addItem(productName, productPrice);
+            }
+        };
+    });
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Load products first
+    setTimeout(() => {
+        updateAddToCartButtons();
+        djangoCart.updateDisplay();
+    }, 1000);
+});
+
+// Global checkout function
+window.checkout = function() {
+    djangoCart.checkout();
+};
+
+// Global toggle cart function
+window.toggleCart = function() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    if (cartSidebar) {
+        cartSidebar.classList.toggle('open');
+        djangoCart.updateDisplay();
+    }
+};
+
 
         // Cart functionality
          function addToCart(itemName, price) {
